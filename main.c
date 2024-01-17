@@ -2,33 +2,48 @@
 #include <string.h>
 #include <unistd.h> // Used for getcwd
 
+#define MAX_PATH_LENGTH 1028
+#define MAX_INPUT_LENGTH 512
+#define DELIMITERS " \t\n;&><|"
+
 int main(void){
     
-    char cwd[1028];
-    getcwd(cwd, sizeof(cwd)); // Change this 
-    char input_buf[512];
-    char* delimiters = " \t\n;&><|";
-    char* token;
+    char cwd[MAX_PATH_LENGTH];
+    // Get the current working directory and check for NULL wd
+    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+        perror("getcwd() error");
+        return 1;
+    }
+    printf("Current working dir: %s\n", cwd); //Test current working directory
+    char input_buf[MAX_INPUT_LENGTH];
+    char *token;
     int looping = 1;
-    // Do while shell has not terminated
-    while(looping){
-        // Display prompt
-        printf("8--");
-        // Read and parse user input
-        fgets(input_buf, sizeof(input_buf), stdin);
-        token = strtok(input_buf, delimiters);
+
+    //Main loop
+    while (looping){
+      printf("--8 ");
+      // Get input from stdin and check for error
+      if (fgets(input_buf, sizeof(input_buf), stdin) == NULL) {
+            perror("fgets() error");
+            clearerr(stdin);            
+            continue;
+         }
+    
+      // Parse input into tokens
+      token = strtok(input_buf, DELIMITERS);
         while( token != NULL ) {
-        printf( "\"%s\"\n", token );
-        if (strcmp(token, "exit") == 0){
-            printf("Exit\n");
-            looping = 0;
-        }
-        token = strtok(NULL, delimiters);
+            printf( "\"%s\"\n", token );
+            if (strcmp(token, "exit") == 0){
+                printf("Exit\n");
+                looping = 0;
+            }
+            token = strtok(NULL, DELIMITERS);
         }
     }
-    // Exit
+
     return 0;
 }
+    
 /*
 Find the user home directory from the environment
 Set current working directory to user home directory
