@@ -1,10 +1,42 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h> // Used for getcwd
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #define MAX_PATH_LENGTH 1028
 #define MAX_INPUT_LENGTH 512
 #define DELIMITERS " \t\n;&><|"
+
+int forky_fun(char *command, char* arguments[], int args_len){
+    pid_t parent = getpid();
+    pid_t pid = fork();
+    if (pid == -1) {
+        return -1;
+    } else if (pid > 0) {
+        int status;
+        waitpid(pid, &status, 0);
+        return 0;
+    } else { // This is the child proccess
+        char **argv; // Pointer for the argument array
+        argv = malloc(sizeof(char *) * args_len+2);
+    
+        argv[0] = malloc(strlen(command));
+        strcpy(argv[0], command);
+
+        int i = 0;
+        while (i<args_len){
+            argv[i+1] = malloc(strlen(arguments[i]));
+            strcpy(argv[i+1], arguments[i]);
+            i++;
+        }
+        argv[i+1] = malloc(sizeof(NULL));
+        argv[i+1] = NULL;
+        execvp(command, argv);
+    }
+    return 0;
+}
 
 int main(void){
     
@@ -18,10 +50,9 @@ int main(void){
     char input_buf[MAX_INPUT_LENGTH];
     char *token;
     int looping = 1;
-
     //Main loop
     while (looping){
-      printf("--8 ");
+      printf("8-- ");
       // Get input from stdin and check for error
       if (fgets(input_buf, sizeof(input_buf), stdin) == NULL) {
             //check for ctrl-D
@@ -39,6 +70,10 @@ int main(void){
             if (strcmp(token, "exit") == 0){
                 printf("Exit\n");
                 looping = 0;
+            } else {
+                char* a[1];
+                a[0] = "-a";
+                forky_fun("ls", a, 1);
             }
             token = strtok(NULL, DELIMITERS);
         }
@@ -46,7 +81,8 @@ int main(void){
 
     return 0;
 }
-    
+
+
 /*
 Find the user home directory from the environment
 Set current working directory to user home directory
