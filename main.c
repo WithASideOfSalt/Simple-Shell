@@ -24,10 +24,13 @@ int main(void){
       printf("--8 ");
       // Get input from stdin and check for error
       if (fgets(input_buf, sizeof(input_buf), stdin) == NULL) {
-            perror("fgets() error");
+            //check for CTRL^D
+            if(feof(stdin)){
+                strcpy(input_buf, "exit");
+                printf("%s\n", input_buf);
+            }
             clearerr(stdin);            
-            continue;
-         }
+        }
     
       // Parse input into tokens
       token = strtok(input_buf, DELIMITERS);
