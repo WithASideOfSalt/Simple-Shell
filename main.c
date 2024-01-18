@@ -17,7 +17,13 @@ int forky_fun(char *command, char* arguments[], int args_len){
     } else if (pid > 0) {
         int status;
         waitpid(pid, &status, 0);
-        return 0;
+        if (status == 0){
+            return 0;
+        } else {
+            printf("Status:%d\n", status);
+            return -1;
+        }
+        
     } else { // This is the child proccess
         char **argv; // Pointer for the argument array
         argv = malloc(sizeof(char *) * args_len+2);
@@ -34,8 +40,8 @@ int forky_fun(char *command, char* arguments[], int args_len){
         argv[i+1] = malloc(sizeof(NULL));
         argv[i+1] = NULL;
         execvp(command, argv);
+        _exit(EXIT_FAILURE);
     }
-    return 0;
 }
 
 int main(void){
