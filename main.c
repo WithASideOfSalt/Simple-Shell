@@ -43,6 +43,21 @@ int forky_fun(char *command, char* arguments[], int args_len){
         _exit(EXIT_FAILURE);
     }
 }
+char **tokenize(char *str){
+    char *token;
+    char *tokens[50];
+    tokens = malloc(sizeof(char**)*50);
+    int i = 0;
+    token = strtok(str, DELIMITERS);
+    while (token != NULL){
+        tokens[i] = malloc(sizeof(char *));
+        strcpy(tokens[i], token);
+        token = strtok(NULL, DELIMITERS);
+        i++;
+    }
+    return tokens;
+}
+
 
 int main(void){
     
@@ -58,9 +73,9 @@ int main(void){
     int looping = 1;
     //Main loop
     while (looping){
-      printf("8-- ");
-      // Get input from stdin and check for error
-      if (fgets(input_buf, sizeof(input_buf), stdin) == NULL) {
+        printf("8-- ");
+        // Get input from stdin and check for error
+        if (fgets(input_buf, sizeof(input_buf), stdin) == NULL) {
             //check for ctrl-D
             if(feof(stdin)){
                 strcpy(input_buf, "exit");
@@ -68,23 +83,26 @@ int main(void){
             }
             clearerr(stdin);            
         }
-    
-      // Parse input into tokens
-      token = strtok(input_buf, DELIMITERS);
+        printf("%s", *tokenize(input_buf));
+        // Parse input into tokens
+        char *tokens[50];
+        int i = 0;
+        token = strtok(input_buf, DELIMITERS);
         while( token != NULL ) {
             printf( "\"%s\"\n", token );
             if (strcmp(token, "exit") == 0){
                 printf("Exit\n");
                 looping = 0;
             } else {
-                char* a[1];
-                a[0] = "-a";
-                forky_fun("ls", a, 1);
+                tokens[i] = malloc(sizeof(char *));
+                strcpy(tokens[i], token);
+                i++;
             }
             token = strtok(NULL, DELIMITERS);
         }
+        forky_fun(tokens[0], tokens+1, 1);
     }
-
+    
     return 0;
 }
 
