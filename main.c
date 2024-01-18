@@ -24,7 +24,7 @@ int main(void){
       printf("--8 ");
       // Get input from stdin and check for error
       if (fgets(input_buf, sizeof(input_buf), stdin) == NULL) {
-            //check for CTRL^D
+            //check for ctrl-D
             if(feof(stdin)){
                 strcpy(input_buf, "exit");
                 printf("%s\n", input_buf);
