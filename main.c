@@ -5,8 +5,6 @@
 #include "simple-shell.h"
 
 
-
-
 int main(void){
     
     char cwd[MAX_PATH_LENGTH];
@@ -20,6 +18,7 @@ int main(void){
     int looping = 1;
     //Main loop
     while (looping){
+        // Print prompt
         printf("8-- ");
         // Get input from stdin and check for error
         if (fgets(input_buf, sizeof(input_buf), stdin) == NULL) {
@@ -30,11 +29,13 @@ int main(void){
             }
             clearerr(stdin);            
         }
-        // Parse input into tokens
+        // Create array of strings to store tokens
         char **tokens;
-        tokens = malloc(sizeof(char**)*50);
+        // Allocate memory to the array of char pointers
+        tokens = malloc(sizeof(char**)*MAX_TOKENS);
+        // Parse input into tokens
         int number_of_tokens = tokenize(input_buf, tokens);
-
+        // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
             if (strcmp(tokens[0], "exit") == 0){
                 looping = 0;
