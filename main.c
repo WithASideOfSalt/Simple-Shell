@@ -19,7 +19,11 @@ int forky_fun(char *command, char* arguments[], int args_len){
         waitpid(pid, &status, 0); // Wait for the child to finish
         if (status == 0){
             return 0;
-        } else {
+        } else if (status==256) {
+            printf("Error, command not found\n");
+            return -1;
+        } 
+        else {
             printf("Status:%d\n", status);
             return -1;
         }
@@ -53,7 +57,7 @@ int tokenize(char *str, char **tokens){
     int i = 0;
     token = strtok(str, DELIMITERS);
     while (token != NULL){
-        tokens[i] = malloc(sizeof(char *));
+        tokens[i] = malloc(strlen(token));
         strcpy(tokens[i], token);
         token = strtok(NULL, DELIMITERS);
         i++;
@@ -81,30 +85,30 @@ int main(void){
             //check for ctrl-D
             if(feof(stdin)){
                 strcpy(input_buf, "exit");
-                printf("%s\n", input_buf);
             }
             clearerr(stdin);            
         }
-        //printf("Tokenize: %s\n", tokenize(input_buf)[0]);
         // Parse input into tokens
         char **tokens;
         tokens = malloc(sizeof(char**)*50);
         int number_of_tokens = tokenize(input_buf, tokens);
 
-        if (strcmp(*tokens, "exit") == 0){
-            printf("Exit\n");
-            looping = 0;
-        } else if (*tokens != NULL){
-            printf("Fork");
-            forky_fun(tokens[0], tokens+1, 1);
+        if (number_of_tokens > 0){ 
+            if (strcmp(tokens[0], "exit") == 0){
+                looping = 0;
+            } else {
+                forky_fun(tokens[0], tokens+1, number_of_tokens-1);
+            }
         }
-        }
+    }
     
     return 0;
 }
 
 
 /*
+Max of 26 input characters, 27 causes malloc(): corrupted top size
+
 Find the user home directory from the environment
 Set current working directory to user home directory
 Save the current path
