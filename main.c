@@ -44,10 +44,12 @@ int forky_fun(char *command, char* arguments[], int args_len){
     }
 }
 
-char **tokenize(char *str){
-    char *token;
-    char **tokens;
-    tokens = malloc(sizeof(char**)*50);
+int tokenize(char *str, char **tokens){
+    /*
+    Return the number of tokens.
+    Tokens are put in tokens.
+    */
+    char *token; 
     int i = 0;
     token = strtok(str, DELIMITERS);
     while (token != NULL){
@@ -56,7 +58,7 @@ char **tokenize(char *str){
         token = strtok(NULL, DELIMITERS);
         i++;
     }
-    return tokens;
+    return i;
 }
 
 
@@ -82,19 +84,18 @@ int main(void){
                 printf("%s\n", input_buf);
             }
             clearerr(stdin);            
-        } else {
-            
         }
-        printf("Tokenize: %s\n", tokenize(input_buf)[1]);
+        //printf("Tokenize: %s\n", tokenize(input_buf)[0]);
         // Parse input into tokens
         char **tokens;
-        tokens = tokenize(input_buf);
+        tokens = malloc(sizeof(char**)*50);
+        int number_of_tokens = tokenize(input_buf, tokens);
 
         if (strcmp(*tokens, "exit") == 0){
             printf("Exit\n");
             looping = 0;
         } else if (*tokens != NULL){
-            printf("FOrk");
+            printf("Fork");
             forky_fun(tokens[0], tokens+1, 1);
         }
         }
