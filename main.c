@@ -85,18 +85,18 @@ int main(void){
             }
             clearerr(stdin);            
         }
-        //printf("Tokenize: %s\n", tokenize(input_buf)[0]);
+        printf("Input buf: %s\n", input_buf);
         // Parse input into tokens
         char **tokens;
         tokens = malloc(sizeof(char**)*50);
         int number_of_tokens = tokenize(input_buf, tokens);
-
+        printf("Number of tokens: %d", number_of_tokens);
         if (strcmp(*tokens, "exit") == 0){
             printf("Exit\n");
             looping = 0;
         } else if (*tokens != NULL){
             printf("Fork");
-            forky_fun(tokens[0], tokens+1, 1);
+            forky_fun(tokens[0], tokens+1, number_of_tokens-1);
         }
         }
     
