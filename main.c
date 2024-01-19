@@ -16,7 +16,7 @@ int forky_fun(char *command, char* arguments[], int args_len){
         return -1;
     } else if (pid > 0) {
         int status;
-        waitpid(pid, &status, 0);
+        waitpid(pid, &status, 0); // Wait for the child to finish
         if (status == 0){
             return 0;
         } else {
@@ -43,9 +43,10 @@ int forky_fun(char *command, char* arguments[], int args_len){
         _exit(EXIT_FAILURE);
     }
 }
+
 char **tokenize(char *str){
     char *token;
-    char *tokens[50];
+    char **tokens;
     tokens = malloc(sizeof(char**)*50);
     int i = 0;
     token = strtok(str, DELIMITERS);
@@ -69,7 +70,6 @@ int main(void){
     }
     printf("Current working dir: %s\n", cwd); //Test current working directory
     char input_buf[MAX_INPUT_LENGTH];
-    char *token;
     int looping = 1;
     //Main loop
     while (looping){
@@ -82,26 +82,22 @@ int main(void){
                 printf("%s\n", input_buf);
             }
             clearerr(stdin);            
+        } else {
+            
         }
-        printf("%s", *tokenize(input_buf));
+        printf("Tokenize: %s\n", tokenize(input_buf)[1]);
         // Parse input into tokens
-        char *tokens[50];
-        int i = 0;
-        token = strtok(input_buf, DELIMITERS);
-        while( token != NULL ) {
-            printf( "\"%s\"\n", token );
-            if (strcmp(token, "exit") == 0){
-                printf("Exit\n");
-                looping = 0;
-            } else {
-                tokens[i] = malloc(sizeof(char *));
-                strcpy(tokens[i], token);
-                i++;
-            }
-            token = strtok(NULL, DELIMITERS);
+        char **tokens;
+        tokens = tokenize(input_buf);
+
+        if (strcmp(*tokens, "exit") == 0){
+            printf("Exit\n");
+            looping = 0;
+        } else if (*tokens != NULL){
+            printf("FOrk");
+            forky_fun(tokens[0], tokens+1, 1);
         }
-        forky_fun(tokens[0], tokens+1, 1);
-    }
+        }
     
     return 0;
 }
