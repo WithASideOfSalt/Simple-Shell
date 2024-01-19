@@ -34,7 +34,7 @@ int main(void){
         // Allocate memory to the array of char pointers
         tokens = malloc(sizeof(char**)*MAX_TOKENS);
         // Parse input into tokens
-        int number_of_tokens = tokenize(input_buf, tokens);
+        int number_of_tokens = tokenize(input_buf, tokens); 
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
             if (strcmp(tokens[0], "exit") == 0){
@@ -43,6 +43,10 @@ int main(void){
                 forky_fun(tokens[0], tokens+1, number_of_tokens-1);
             }
         }
+        for (int i = 0; i < number_of_tokens; i++){
+            free(tokens[i]);
+        }
+        free(tokens);
     }
     
     return 0;
