@@ -85,6 +85,7 @@ int main(void){
             //check for ctrl-D
             if(feof(stdin)){
                 strcpy(input_buf, "exit");
+                printf("\n");
             }
             clearerr(stdin);            
         }
