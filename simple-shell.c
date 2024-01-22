@@ -76,3 +76,54 @@ int tokenize(char *str, char **tokens){
     }
     return i;
 }
+
+AliasList read_aliases(){
+    FILE *alias_file;
+    char buf[512];
+    AliasList aliases;
+
+    alias_file = fopen(".aliases" , "r");
+    if(alias_file == NULL) {
+      perror("Error opening alias file");
+   }
+   int i = 0;
+   while(fgets(buf, 512, alias_file) != NULL) {
+        char *token;
+        token = strtok(buf, DELIMITERS);
+        strcpy(aliases.list[i].to_replace, token);
+        token = strtok(NULL, DELIMITERS);
+        int x = 0;
+        while (token != NULL){
+            printf("x:%d\n", x);
+            strcpy(aliases.list[i].replace_with[x], token);
+            token = strtok(NULL, DELIMITERS);
+            x++;
+            
+        }
+        aliases.list[i].rplc_wth_size = x;
+        printf("i:%d\n", i);
+        i++;
+   }
+   printf("i:%d\n", i);
+   aliases.length = i;
+   printf("aliases length:%d\n", aliases.length);
+   fclose(alias_file);
+   return aliases;
+}
+
+int save_aliases(AliasList a_list){
+    FILE *alias_file;
+    alias_file = fopen(".aliases" , "w");
+    for (int alias = 0; alias < a_list.length; alias++){
+        char line[MAX_INPUT_LENGTH];
+        memset(line,0,strlen(line)); // Make sure line is empty
+        strcat(line, a_list.list[alias].to_replace);
+        for (int i = 0; i<a_list.list[alias].rplc_wth_size; i++){
+            strcat(line, " ");
+            strcat(line, a_list.list[alias].replace_with[i]);
+        }
+        strcat(line, "\n");
+        fprintf(alias_file, "%s", line);
+    }
+    return 0;
+}
