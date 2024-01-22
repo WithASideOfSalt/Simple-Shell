@@ -1,8 +1,9 @@
+#include "simple-shell.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h> // Used for getcwd
-#include "simple-shell.h"
+
 
 
 int main(void){
@@ -13,7 +14,34 @@ int main(void){
         perror("getcwd() error");
         return 1;
     }
-    printf("Current working dir: %s\n", cwd); //Test current working directory
+    // Save the original PATH when your shell starts up.
+
+    if (getenv("PATH") != NULL) {
+    strcpy(cwd, getenv("PATH"));
+} else {
+   printf("Error: PATH not found in the environment.\n");
+  
+}
+
+char *home_directory = getenv("HOME");
+if (home_directory != NULL) {
+    if (chdir(home_directory) != 0) {
+        perror("chdir() error");
+       
+    }
+} else {
+    printf("Error: HOME not found in the environment.\n");
+    
+}
+// Print the current working directory after changing
+if (getcwd(cwd, sizeof(cwd)) != NULL) {
+    printf("Current working dir: %s\n", cwd);
+} else {
+    perror("getcwd() error");
+
+}
+    
+
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
     //Main loop
@@ -39,7 +67,14 @@ int main(void){
         if (number_of_tokens > 0){ 
             if (strcmp(tokens[0], "exit") == 0){
                 looping = 0;
-            } else {
+            } 
+            else if (strcmp(tokens[0], "getpath") == 0) {
+            get_env(tokens, number_of_tokens);
+        } 
+        else if (strcmp(tokens[0], "setpath") == 0) {
+            set_env(tokens, number_of_tokens);
+        } 
+        else {
                 forky_fun(tokens[0], tokens+1, number_of_tokens-1);
             }
         }
@@ -48,7 +83,12 @@ int main(void){
         }
         free(tokens);
     }
+
     
+    // Restore original path before exiting
+    restore_original_path(cwd);
+    
+
     return 0;
 }
 

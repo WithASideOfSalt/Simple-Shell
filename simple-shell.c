@@ -1,6 +1,6 @@
 #include "simple-shell.h"
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> //setenv, getenv
 #include <string.h>
 #include <unistd.h> // Used for getcwd
 #include <sys/types.h>
@@ -76,3 +76,58 @@ int tokenize(char *str, char **tokens){
     }
     return i;
 }
+
+int get_env(char **tokens, int number_of_tokens) {
+    if (number_of_tokens != 1) {
+        printf("Error: Incorrect usage of getpath command. Usage: getpath\n");
+        return -1;
+    }
+    char *path_value = getenv("PATH");
+ if (path_value != NULL) {
+        printf("Current PATH: %s\n", path_value);
+    } else {
+        printf("Error: PATH not found in the environment.\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+int set_env(char **tokens, int number_of_tokens) {
+    if (number_of_tokens != 2) {
+        printf("Error: Incorrect usage of setpath command. Usage: setpath <new_path>\n");
+        return -1;
+    }
+
+    // Set the new path using setenv
+    if (setenv("PATH", tokens[1], 1) != 0) {
+        perror("setenv() error");
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int restore_original_path(char *original_path) {
+// Restore the PATH to its original value
+    if (setenv("PATH", original_path, 1) != 0) {
+        perror("setenv() error");
+        return -1;
+    }
+
+       // Print the restored path
+    char *restored_path = getenv("PATH");
+    if (restored_path != NULL) {
+        printf("Restored PATH: %s\n", restored_path);
+    } else {
+        fprintf(stderr, "Error: PATH not found in the environment after restoration.\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+
+     
+
