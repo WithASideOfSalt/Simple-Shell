@@ -4,7 +4,6 @@
 #include <unistd.h> // Used for getcwd
 #include "simple-shell.h"
 
-
 int main(void){
     
     char cwd[MAX_PATH_LENGTH];
@@ -16,6 +15,7 @@ int main(void){
     printf("Current working dir: %s\n", cwd); //Test current working directory
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
+    //Initialize history
     //Main loop
     while (looping){
         // Print prompt
@@ -37,10 +37,32 @@ int main(void){
         int number_of_tokens = tokenize(input_buf, tokens); 
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
-            if (strcmp(tokens[0], "exit") == 0){
-                looping = 0;
-            } else {
-                forky_fun(tokens[0], tokens+1, number_of_tokens-1);
+             
+            builtins command = get_enum(tokens[0]);
+            switch(command){
+                case CD:
+                    add_to_history(command);
+                    //Stage 3 stuff
+                    break;
+                case HISTORY:
+                    add_to_history(command);
+                    print_history();    
+                    break;
+                case ALIAS:
+                    add_to_history(command);
+                    //Stage 7 stuff
+                    break;
+                case UNALIAS:
+                    add_to_history(command);
+                    //Stage 7 stuff
+                    break;
+                case EXIT:
+                    looping = 0;
+                    break;
+                default:
+
+                    forky_fun(tokens[0], tokens+1, number_of_tokens-1);
+                    break;
             }
         }
         for (int i = 0; i < number_of_tokens; i++){

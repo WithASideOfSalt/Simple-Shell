@@ -6,6 +6,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+int history_index = 0;
+struct Command history[MAX_HISTORY];
+
 /*
  *Forks and executes an external program.
  *@param command The external process to run.
@@ -75,4 +78,29 @@ int tokenize(char *str, char **tokens){
         i++;
     }
     return i;
+}
+
+builtins get_enum (char * command) {
+    if (strcmp(command, "cd") == 0) return CD;
+    if (strcmp(command, "history") == 0) return HISTORY;
+    if (strcmp(command, "alias") == 0) return ALIAS;
+    if (strcmp(command, "unalias") == 0) return UNALIAS;
+    if (strcmp(command, "exit") == 0) return EXIT;
+    return 0;
+}
+
+void add_to_history(char *Command) {
+    strcpy(history[history_index % MAX_HISTORY].line, Command);
+    history[history_index % MAX_HISTORY].number = history_index;
+    history_index++;
+}
+
+void print_history() {
+    int i = 0;
+    while (i < MAX_HISTORY) {
+        if (history[i].number != 0) {
+            printf("%d %s", history[i].number, history[i].line);
+        }
+        i++;
+    }
 }
