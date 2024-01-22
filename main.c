@@ -16,6 +16,8 @@ int main(void){
     printf("Current working dir: %s\n", cwd); //Test current working directory
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
+    AliasList aliaslist;
+    Alias alias;
     //Main loop
     while (looping){
         // Print prompt
@@ -37,6 +39,24 @@ int main(void){
         int number_of_tokens = tokenize(input_buf, tokens); 
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
+            //check for aliases in tokens[0] and alter them from aliases to the original command(s)
+            for(i =0; i<aliaslist.length; i++){
+                if (strcmp(aliaslist.list[i].to_replace, tokens[0]) == 0){
+                    char **new_tokens;
+                    //ensure there is space for new tokens
+                    new_tokens = malloc(sizeof(char*)*(2*(MAX_TOKENS)));
+                    for(z = 0; z<aliaslist.list[i].rplc_wth_size; z++){
+                        //append new tokens to start of the new token list
+                        new_tokens[z] = aliaslist.list[i].replace_with[z]
+                    }
+                    //repeating for all tokens except one as that one has been replaced by its alias
+                    //replace with size is reduced by 1 so that it is the index rather than the number
+                    for(z = (aliaslist.list[i].rplc_wth_size-1); z<(number_of_tokens-1)+(aliaslist.list[i].rplc_wth_size-1); z++){
+                        new_tokens[z] = tokens[z-aliaslist.list[i].rplc_wth_size];
+                    }
+                } 
+            }
+            //after subbing in checking for exit at position 0
             if (strcmp(tokens[0], "exit") == 0){
                 looping = 0;
             } else {
