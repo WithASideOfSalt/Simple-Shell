@@ -17,7 +17,7 @@ int main(void){
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
     AliasList aliaslist;
-    Alias alias;
+    aliaslist.length = 0
     //Main loop
     while (looping){
         // Print prompt
@@ -59,6 +59,17 @@ int main(void){
             //after subbing in checking for exit at position 0
             if (strcmp(tokens[0], "exit") == 0){
                 looping = 0;
+            }
+            if(strcmp(tokens[0], "unalias") == 0){
+                unalias(tokens+1, number_of_tokens-1, aliaslist);
+            } 
+            if (strcmp(tokens[0], "alias") == 0){
+                if(number_of_tokens > 1){
+                    create_alias(tokens+1, number_of_tokens-1, aliaslist); 
+                } else {
+                    print_aliases(aliaslist);
+                }
+                             
             } else {
                 forky_fun(tokens[0], tokens+1, number_of_tokens-1);
             }

@@ -76,3 +76,59 @@ int tokenize(char *str, char **tokens){
     }
     return i;
 }
+void unalias(char* arguments[], int args_len, AliasList aliaslist){
+    int found = 0;
+    for(i=0;i<aliaslist.length;i++){
+        if(strcmp(aliaslist.list[i], arguments[0]) == 0){
+            found = 1;
+            //attempting to free memory used for the list by overwriting all the removed entry with the subsequent entry and repeat for the remainder of the list
+            for(z=i;z<aliaslist.length-1;z++){
+                aliaslist.list[z].to_replace = aliaslist.list[z+1].to_replace
+                aliaslist.list[z].replace_with = aliaslist.list[z+1].replace_with
+                aliaslist.list[z].rplc_wth_size = aliaslist.list[z+1].rplc_wth_size
+            }
+            //setting the final entry to be empty so that it will be replaced by next added entry
+            aliaslist.list[aliaslist.length].to_replace = ""
+            aliaslist.list[aliaslist.length].replace_with = []
+            aliaslist.list[aliaslist.length].rplc_wth_size = 0
+            //reducing length to be equal to current length
+            aliaslist.length = (aliaslist.length-1)
+        }
+    }
+    if(found == 0){
+        printf("Error: alias not found \n")
+    }
+}
+//the code to create new aliases this does not save them to any other file it just adds them for the current run
+void create_alias(char* arguments[], int args_len, AliasList aliaslist){
+    //check for attempted creation of duplicate aliases
+    for(i=0;i<aliaslist.length;i++){
+        if(strcmp(aliaslist.list[i].to_replace, arguments[0]) == 0){
+            printf("Error: creation of duplicate alias:" + arguments[0] + " replaced older alias\n");
+            //remove old alias
+            unalias(arguments, args_len, aliaslist)
+        }
+    }
+    //create new instance of struct
+    Alias newalias;
+    //populate struct
+    newalias.rplc_wth_size = (args_len-1);
+    newalias.to_replace = arguments[0];
+    for(i=0; i<(args_len-1); i++){
+        newalias.replace_with[i] = arguments[i+1];
+    }
+    //update aliaslist
+    aliaslist.list[aliaslist.length] = *newalias;
+    aliaslist.length = (aliaslist.length+1); 
+}
+
+void print_alias(AliasList aliaslist){
+    //check if there are no aliases
+    if(aliaslist.length == 0){
+        printf("Error: no aliases found \n")
+    }
+    //print all aliases
+    for(i=0;i<aliaslist.length;i++){
+        printf("Alias " + (i+1) + ": " + aliaslist.list[i].to_replace + " is replaced by " + aliaslist.list[i].replace_with + "\n");
+    }
+}
