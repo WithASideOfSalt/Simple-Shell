@@ -16,6 +16,6 @@ typedef struct AliasList{
 
 int tokenize(char *, char **);
 int forky_fun(char *, char* [], int);
-void unalias(char* [], int, AliasList);
-void create_alias(char* [], int, AliasList);
-void print_aliases(AliasList);
+AliasList unalias(char* [], int, AliasList);
+AliasList create_alias(char* [], int, AliasList);
+void print_aliases();

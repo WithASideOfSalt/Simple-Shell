@@ -57,20 +57,25 @@ int main(void){
                 } 
             }
             //after subbing in checking for exit at position 0
+            int found_function = 0;
             if (strcmp(tokens[0], "exit") == 0){
                 looping = 0;
+                found_function = 1;
             }
             if(strcmp(tokens[0], "unalias") == 0){
-                unalias(tokens+1, number_of_tokens-1, aliaslist);
+                aliaslist = unalias(tokens+1, number_of_tokens-1, aliaslist);
+                found_function = 1;
             } 
             if (strcmp(tokens[0], "alias") == 0){
                 if(number_of_tokens > 1){
-                    create_alias(tokens+1, number_of_tokens-1, aliaslist); 
+                    aliaslist = create_alias(tokens+1, number_of_tokens-1, aliaslist); 
                 } else {
                     print_aliases(aliaslist);
                 }
+                found_function = 1;
                              
-            } else {
+            } 
+            if (found_function == 0){
                 forky_fun(tokens[0], tokens+1, number_of_tokens-1);
             }
         }
