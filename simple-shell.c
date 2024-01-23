@@ -24,7 +24,7 @@ int forky_fun(char *command, char* arguments[], int args_len){
         if (status == 0){
             return 0;
         } else if (status==256) { // Program not found error code
-            printf("Error: Command not found\n");
+            printf("%s: Command not found\n", command);
             return -1;
         } else if (status==512){ // Argument not found
             return -1;
