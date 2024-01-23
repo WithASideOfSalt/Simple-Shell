@@ -85,6 +85,9 @@ builtins get_enum (char * command) {
     if (strcmp(command, "history") == 0) return HISTORY;
     if (strcmp(command, "alias") == 0) return ALIAS;
     if (strcmp(command, "unalias") == 0) return UNALIAS;
+    if (strcmp(command, "getpath") == 0) return GETPATH;
+    if (strcmp(command, "setpath") == 0) return SETPATH;
+    if (strcmp(command, "!!") == 0) return LAST_COMMAND;
     if (strcmp(command, "exit") == 0) return EXIT;
     return 0;
 }

@@ -4,13 +4,12 @@
 #define MAX_TOKENS 50
 #define MAX_HISTORY 20
 
-typedef enum builtins {CD, HISTORY, ALIAS, UNALIAS, EXIT, NONE} builtins;
+typedef enum builtins {CD, HISTORY, ALIAS, UNALIAS, GETPATH, SETPATH, LAST_COMMAND, EXIT, NONE} builtins;
 
-
-struct Command {
+typedef struct Command {
     int number;
     char line[MAX_INPUT_LENGTH];
-};
+} Command;
 
 int tokenize(char *, char **);
 builtins get_enum (char *);

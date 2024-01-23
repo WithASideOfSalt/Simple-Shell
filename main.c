@@ -15,7 +15,7 @@ int main(void){
     printf("Current working dir: %s\n", cwd); //Test current working directory
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
-    //Initialize history
+    //Load history here
     //Main loop
     while (looping){
         // Print prompt
@@ -41,27 +41,42 @@ int main(void){
             builtins command = get_enum(tokens[0]);
             switch(command){
                 case CD:
-                    add_to_history(command);
+                    add_to_history(tokens[0]);
+                    printf("CD\n");
                     //Stage 3 stuff
                     break;
                 case HISTORY:
-                    add_to_history(command);
+                    add_to_history(tokens[0]);
                     print_history();    
                     break;
                 case ALIAS:
-                    add_to_history(command);
+                    add_to_history(tokens[0]);
+                    printf("ALIAS\n");
                     //Stage 7 stuff
                     break;
                 case UNALIAS:
-                    add_to_history(command);
+                    add_to_history(tokens[0]);
+                    printf("UNALIAS\n");
                     //Stage 7 stuff
+                    break;
+                case GETPATH:
+                    add_to_history(tokens[0]);
+                    printf("GETPATH\n");
+                    break;
+                case SETPATH:
+                    add_to_history(tokens[0]);
+                    printf("SETPATH\n");
+                    break;
+                case LAST_COMMAND:
+                    add_to_history(tokens[0]);
+                    printf("LAST_COMMAND\n");
                     break;
                 case EXIT:
                     looping = 0;
                     break;
                 default:
-
                     forky_fun(tokens[0], tokens+1, number_of_tokens-1);
+                    printf("DEFAULT\n");
                     break;
             }
         }
