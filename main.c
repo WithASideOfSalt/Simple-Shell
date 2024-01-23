@@ -16,7 +16,7 @@ int main(void){
 
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
-    int history_index = 1;
+    int history_index = 0;
     struct Command history[MAX_HISTORY];
     //Load history here
     //Main loop

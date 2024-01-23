@@ -96,12 +96,15 @@ builtins get_enum (char * command) {
 
 void add_to_history(char *command, Command *history, int *history_index) {
     strcpy(history[(*history_index) % MAX_HISTORY].line, command);
-    history[(*history_index) % MAX_HISTORY].number = *history_index;
-   (*history_index)++;
+    history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 
+    (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
 }
 
 void print_history(Command *history, int history_index) {
-    for (int i = 1; i < history_index; i++) {
-        printf("%d %s\n", history[i % MAX_HISTORY].number, history[i % MAX_HISTORY].line);
+    for (int i = 0; i < MAX_HISTORY; i++) {
+        int index = (history_index + i) % MAX_HISTORY; 
+        if (history[index].number != 0) { 
+            printf("%d %s\n", history[index].number, history[index].line);
+        }
     }
 }
