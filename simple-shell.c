@@ -78,57 +78,62 @@ int tokenize(char *str, char **tokens){
 }
 void unalias(char* arguments[], int args_len, AliasList aliaslist){
     int found = 0;
-    for(i=0;i<aliaslist.length;i++){
-        if(strcmp(aliaslist.list[i], arguments[0]) == 0){
+    for(int i=0;i<aliaslist.length;i++){
+        if(strcmp(aliaslist.list[i].to_replace, arguments[0]) == 0){
             found = 1;
             //attempting to free memory used for the list by overwriting all the removed entry with the subsequent entry and repeat for the remainder of the list
-            for(z=i;z<aliaslist.length-1;z++){
-                aliaslist.list[z].to_replace = aliaslist.list[z+1].to_replace
-                aliaslist.list[z].replace_with = aliaslist.list[z+1].replace_with
-                aliaslist.list[z].rplc_wth_size = aliaslist.list[z+1].rplc_wth_size
+            for(int z=i;z<aliaslist.length-1;z++){
+                strcpy(aliaslist.list[z].to_replace, aliaslist.list[z+1].to_replace);
+                for(int y=0;y<aliaslist.list[z+1].rplc_wth_size; y++){
+                    //replacing all tokens with the tokens from the next entry
+                    strcpy(aliaslist.list[z].replace_with[y], aliaslist.list[z].replace_with[y+1]);
+                }
+                aliaslist.list[z].rplc_wth_size = aliaslist.list[z+1].rplc_wth_size;
             }
             //setting the final entry to be empty so that it will be replaced by next added entry
-            aliaslist.list[aliaslist.length].to_replace = ""
-            aliaslist.list[aliaslist.length].replace_with = []
-            aliaslist.list[aliaslist.length].rplc_wth_size = 0
+            strcpy(aliaslist.list[aliaslist.length].to_replace, "");
             //reducing length to be equal to current length
-            aliaslist.length = (aliaslist.length-1)
+            aliaslist.length = (aliaslist.length-1);
         }
     }
     if(found == 0){
-        printf("Error: alias not found \n")
+        printf("Error: alias not found \n");
     }
 }
 //the code to create new aliases this does not save them to any other file it just adds them for the current run
 void create_alias(char* arguments[], int args_len, AliasList aliaslist){
     //check for attempted creation of duplicate aliases
-    for(i=0;i<aliaslist.length;i++){
+    for(int i=0;i<aliaslist.length;i++){
         if(strcmp(aliaslist.list[i].to_replace, arguments[0]) == 0){
-            printf("Error: creation of duplicate alias:" + arguments[0] + " replaced older alias\n");
+            printf("Error: creation of duplicate alias: %s replaced older alias\n", arguments[0]);
             //remove old alias
-            unalias(arguments, args_len, aliaslist)
+            unalias(arguments, args_len, aliaslist);
         }
     }
     //create new instance of struct
     Alias newalias;
     //populate struct
     newalias.rplc_wth_size = (args_len-1);
-    newalias.to_replace = arguments[0];
-    for(i=0; i<(args_len-1); i++){
-        newalias.replace_with[i] = arguments[i+1];
+    strcpy(newalias.to_replace, arguments[0]);
+    for(int i=0; i<(args_len-1); i++){
+        strcpy(newalias.replace_with[i], arguments[i+1]);
     }
     //update aliaslist
-    aliaslist.list[aliaslist.length] = *newalias;
+    aliaslist.list[aliaslist.length] = newalias;
     aliaslist.length = (aliaslist.length+1); 
 }
 
 void print_alias(AliasList aliaslist){
     //check if there are no aliases
     if(aliaslist.length == 0){
-        printf("Error: no aliases found \n")
+        printf("Error: no aliases found \n");
     }
     //print all aliases
-    for(i=0;i<aliaslist.length;i++){
-        printf("Alias " + (i+1) + ": " + aliaslist.list[i].to_replace + " is replaced by " + aliaslist.list[i].replace_with + "\n");
+    for(int i=0;i<aliaslist.length;i++){
+        printf("Alias %d: %s is replaced by ", (i+1), aliaslist.list[i].to_replace);
+        for(int z=0;z<aliaslist.list[i].rplc_wth_size; z++){
+            printf("%s ", aliaslist.list[i].replace_with[z]);
+        }
+        printf("\n");
     }
 }
