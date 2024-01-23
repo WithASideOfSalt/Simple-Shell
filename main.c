@@ -39,6 +39,7 @@ int main(void){
         int number_of_tokens = tokenize(input_buf, tokens); 
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
+            int found_function = 0;
             //check for aliases in tokens[0] and alter them from aliases to the original command(s)
             for(int i=0; i<aliaslist.length; i++){
                 if (strcmp(aliaslist.list[i].to_replace, tokens[0]) == 0){
@@ -54,10 +55,11 @@ int main(void){
                     for(int z=(aliaslist.list[i].rplc_wth_size-1); z<(number_of_tokens-1)+(aliaslist.list[i].rplc_wth_size-1); z++){
                         new_tokens[z] = tokens[z-aliaslist.list[i].rplc_wth_size];
                     }
+                    found_function = 1;
+                    forky_fun(new_tokens[0], new_tokens+1, ((number_of_tokens-1)+(aliaslist.list[i].rplc_wth_size-1)));
                 } 
             }
             //after subbing in checking for exit at position 0
-            int found_function = 0;
             if (strcmp(tokens[0], "exit") == 0){
                 looping = 0;
                 found_function = 1;
