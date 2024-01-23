@@ -16,8 +16,7 @@ int main(void){
     printf("Current working dir: %s\n", cwd); //Test current working directory
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
-    AliasList aliaslist;
-    aliaslist.length = 0;
+    AliasList aliaslist = read_aliases();
     //Main loop
     while (looping){
         // Print prompt
@@ -93,7 +92,7 @@ int main(void){
         }
         free(tokens);
     }
-    
+    save_aliases(aliaslist);
     return 0;
 }
 
