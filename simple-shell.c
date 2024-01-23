@@ -112,17 +112,21 @@ AliasList create_alias(char* arguments[], int args_len, AliasList aliaslist){
             aliaslist = unalias(arguments, args_len, aliaslist);
         }
     }
-    //create new instance of struct
-    Alias newalias;
-    //populate struct
-    newalias.rplc_wth_size = (args_len-1);
-    strcpy(newalias.to_replace, arguments[0]);
-    for(int i=0; i<(args_len-1); i++){
-        strcpy(newalias.replace_with[i], arguments[i+1]);
+    if(aliaslist.length < 10){
+        //create new instance of struct
+        Alias newalias;
+        //populate struct
+        newalias.rplc_wth_size = (args_len-1);
+        strcpy(newalias.to_replace, arguments[0]);
+        for(int i=0; i<(args_len-1); i++){
+            strcpy(newalias.replace_with[i], arguments[i+1]);
+        }
+        //update aliaslist
+        aliaslist.list[aliaslist.length] = newalias;
+        aliaslist.length = (aliaslist.length+1); 
+    } else {
+        printf("Error: alias list is full no more can be set \n");
     }
-    //update aliaslist
-    aliaslist.list[aliaslist.length] = newalias;
-    aliaslist.length = (aliaslist.length+1); 
     return aliaslist;
 }
 
