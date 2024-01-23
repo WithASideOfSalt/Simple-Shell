@@ -77,6 +77,10 @@ int tokenize(char *str, char **tokens){
     return i;
 }
 
+/*
+ *Loads the aliases from file.
+ *@return The AliasList loaded from .aliases
+ */
 AliasList read_aliases(){
     FILE *alias_file;
     char buf[512];
