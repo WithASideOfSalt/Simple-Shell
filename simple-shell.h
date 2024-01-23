@@ -14,5 +14,5 @@ typedef struct Command {
 int tokenize(char *, char **);
 builtins get_enum (char *);
 int forky_fun(char *, char* [], int);
-void add_to_history(char *);
-void print_history();
+void add_to_history(char *, Command *, int *);
+void print_history(Command *, int);
