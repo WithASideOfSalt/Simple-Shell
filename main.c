@@ -44,17 +44,24 @@ int main(void){
             for(int i=0; i<aliaslist.length; i++){
                 if (strcmp(aliaslist.list[i].to_replace, tokens[0]) == 0){
                     char **new_tokens;
+                    //creating new integer for current number of tokens
+                    int new_number_of_tokens = (number_of_tokens+aliaslist.list[i].rplc_wth_size);
                     //ensure there is space for new tokens
-                    new_tokens = malloc(sizeof(char*)*(2*(MAX_TOKENS)));
+                    new_tokens = malloc(sizeof(char*) * (2 * (MAX_TOKENS)));
                     for(int z=0; z<aliaslist.list[i].rplc_wth_size; z++){
                         //append new tokens to start of the new token list
                         new_tokens[z] = aliaslist.list[i].replace_with[z];
+                        //if finished adding new tokens add old tokens on the end      
+                        if(z == (aliaslist.list[i].rplc_wth_size-1)){
+                            //repeat equal to the number of tokens -z so that exactly the max index is used
+                            for(int y=1; y<((new_number_of_tokens)-z); y++){
+                                new_tokens[z+y] = tokens[y];
+                        }
+                    }
                     }
                     //repeating for all tokens except one as that one has been replaced by its alias
                     //replace with size is reduced by 1 so that it is the index rather than the number
-                    for(int z=(aliaslist.list[i].rplc_wth_size-1); z<(number_of_tokens-1)+(aliaslist.list[i].rplc_wth_size-1); z++){
-                        new_tokens[z] = tokens[z-aliaslist.list[i].rplc_wth_size];
-                    }
+                    
                     found_function = 1;
                     forky_fun(new_tokens[0], new_tokens+1, ((number_of_tokens-1)+(aliaslist.list[i].rplc_wth_size-1)));
                 } 
