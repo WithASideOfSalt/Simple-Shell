@@ -9,6 +9,7 @@ typedef struct Alias{
     char replace_with[MAX_TOKENS][MAX_INPUT_LENGTH];
     int rplc_wth_size;
 } Alias;
+
 typedef struct AliasList{
     Alias list[MAX_ALIASES];
     int length;
@@ -16,6 +17,8 @@ typedef struct AliasList{
 
 int tokenize(char *, char **);
 int forky_fun(char *, char* [], int);
+AliasList read_aliases();
+int save_aliases(AliasList);
 AliasList unalias(char* [], int, AliasList);
 AliasList create_alias(char* [], int, AliasList);
 void print_aliases();
