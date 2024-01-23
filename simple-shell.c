@@ -123,7 +123,7 @@ void create_alias(char* arguments[], int args_len, AliasList aliaslist){
     aliaslist.length = (aliaslist.length+1); 
 }
 
-void print_alias(AliasList aliaslist){
+void print_aliases(AliasList aliaslist){
     //check if there are no aliases
     if(aliaslist.length == 0){
         printf("Error: no aliases found \n");
