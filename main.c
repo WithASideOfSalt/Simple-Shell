@@ -16,6 +16,8 @@ int main(void){
     printf("Current working dir: %s\n", cwd); //Test current working directory
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
+    AliasList aliaslist;
+    aliaslist.length = 0;
     //Main loop
     while (looping){
         // Print prompt
@@ -37,9 +39,52 @@ int main(void){
         int number_of_tokens = tokenize(input_buf, tokens); 
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
+            int found_function = 0;
+            //check for aliases in tokens[0] and alter them from aliases to the original command(s)
+            for(int i=0; i<aliaslist.length; i++){
+                if (strcmp(aliaslist.list[i].to_replace, tokens[0]) == 0){
+                    char **new_tokens;
+                    //creating new integer for current number of tokens
+                    int new_number_of_tokens = (number_of_tokens+aliaslist.list[i].rplc_wth_size);
+                    //ensure there is space for new tokens
+                    new_tokens = malloc(sizeof(char*) * (2 * (MAX_TOKENS)));
+                    for(int z=0; z<aliaslist.list[i].rplc_wth_size; z++){
+                        //append new tokens to start of the new token list
+                        new_tokens[z] = aliaslist.list[i].replace_with[z];
+                        //if finished adding new tokens add old tokens on the end      
+                        if(z == (aliaslist.list[i].rplc_wth_size-1)){
+                            //repeat equal to the number of tokens -z so that exactly the max index is used
+                            for(int y=1; y<((new_number_of_tokens)-z); y++){
+                                new_tokens[z+y] = tokens[y];
+                        }
+                    }
+                    }
+                    //repeating for all tokens except one as that one has been replaced by its alias
+                    //replace with size is reduced by 1 so that it is the index rather than the number
+                    
+                    found_function = 1;
+                    forky_fun(new_tokens[0], new_tokens+1, ((number_of_tokens-1)+(aliaslist.list[i].rplc_wth_size-1)));
+                } 
+            }
+            //after subbing in checking for exit at position 0
             if (strcmp(tokens[0], "exit") == 0){
                 looping = 0;
-            } else {
+                found_function = 1;
+            }
+            if(strcmp(tokens[0], "unalias") == 0){
+                aliaslist = unalias(tokens+1, number_of_tokens-1, aliaslist);
+                found_function = 1;
+            } 
+            if (strcmp(tokens[0], "alias") == 0){
+                if(number_of_tokens > 1){
+                    aliaslist = create_alias(tokens+1, number_of_tokens-1, aliaslist); 
+                } else {
+                    print_aliases(aliaslist);
+                }
+                found_function = 1;
+                             
+            } 
+            if (found_function == 0){
                 forky_fun(tokens[0], tokens+1, number_of_tokens-1);
             }
         }

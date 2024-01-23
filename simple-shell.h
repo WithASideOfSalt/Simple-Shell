@@ -4,7 +4,6 @@
 #define MAX_TOKENS 50
 #define MAX_ALIASES 10
 
-
 typedef struct Alias{
     char to_replace[MAX_INPUT_LENGTH];
     char replace_with[MAX_TOKENS][MAX_INPUT_LENGTH];
@@ -20,3 +19,6 @@ int tokenize(char *, char **);
 int forky_fun(char *, char* [], int);
 AliasList read_aliases();
 int save_aliases(AliasList);
+AliasList unalias(char* [], int, AliasList);
+AliasList create_alias(char* [], int, AliasList);
+void print_aliases();
