@@ -89,6 +89,8 @@ AliasList read_aliases(){
     alias_file = fopen(".aliases" , "r");
     if(alias_file == NULL) {
       perror("Error opening alias file");
+      aliases.length = 0;
+      return aliases;
    }
    int i = 0;
    while(fgets(buf, 512, alias_file) != NULL) {
