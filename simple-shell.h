@@ -16,3 +16,5 @@ builtins get_enum (char *);
 int forky_fun(char *, char* [], int);
 void add_to_history(char *, Command *, int *);
 void print_history(Command *, int);
+int load_history(Command *);
+void initialize_history(Command *);

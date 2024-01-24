@@ -94,7 +94,14 @@ builtins get_enum (char * command) {
     return NONE;
 }
 
-int load_history(Command *histroy){
+void initialize_history(Command *history) {
+    for (int i = 0; i < MAX_HISTORY; i++) {
+        history[i].number = 0;
+        history[i].line[0] = '\0'; // set the first character to the null character to create an empty string
+    }
+}
+
+int load_history(Command *history){
     
 }
 

@@ -18,9 +18,11 @@ int main(void){
     int looping = 1;
     int history_index = 0;
     struct Command history[MAX_HISTORY];
+    //Initialize history
+    initialize_history(history);    
     //Load history here
     if(load_history(history)){
-        printf("Failed loading history");
+        printf("Failed loading history\n");
     }
     //Main loop
     while (looping){
@@ -34,6 +36,10 @@ int main(void){
                 printf("\n");
             }
             clearerr(stdin);            
+        }
+        // Check for last command
+        if (strcmp(input_buf, "!!\n") == 0){
+            strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
         }
         // Create array of strings to store tokens
         char **tokens;
