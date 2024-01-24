@@ -94,6 +94,10 @@ builtins get_enum (char * command) {
     return NONE;
 }
 
+int load_history(Command *histroy){
+    
+}
+
 void add_to_history(char *command, Command *history, int *history_index) {
     strcpy(history[(*history_index) % MAX_HISTORY].line, command);
     history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 

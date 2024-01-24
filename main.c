@@ -19,6 +19,9 @@ int main(void){
     int history_index = 0;
     struct Command history[MAX_HISTORY];
     //Load history here
+    if(load_history(history)){
+        printf("Failed loading history");
+    }
     //Main loop
     while (looping){
         // Print prompt
@@ -42,37 +45,33 @@ int main(void){
         if (number_of_tokens > 0){ 
              
             builtins command = get_enum(tokens[0]);
+            //add any attempted command into the history
+            add_to_history(tokens[0], history, &history_index);
             
+            //check if built in command, if not let fork handle the rest
             switch(command){
                 case CD:
-                    add_to_history(tokens[0], history, &history_index);
                     printf("CD\n");
                     //Stage 3 stuff
                     break;
                 case HISTORY:
-                    add_to_history(tokens[0], history, &history_index);
                     print_history(history, history_index);    
                     break;
                 case ALIAS:
-                    add_to_history(tokens[0], history, &history_index);
                     printf("ALIAS\n");
                     //Stage 7 stuff
                     break;
                 case UNALIAS:
-                    add_to_history(tokens[0], history, &history_index);
                     printf("UNALIAS\n");
                     //Stage 7 stuff
                     break;
                 case GETPATH:
-                    add_to_history(tokens[0], history, &history_index);
                     printf("GETPATH\n");
                     break;
                 case SETPATH:
-                    add_to_history(tokens[0], history, &history_index);
                     printf("SETPATH\n");
                     break;
                 case LAST_COMMAND:
-                    add_to_history(tokens[0], history, &history_index);
                     printf("LAST_COMMAND\n");
                     break;
                 case EXIT:
