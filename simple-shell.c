@@ -94,8 +94,24 @@ builtins get_enum (char * command) {
     return NONE;
 }
 
-int load_history(Command *histroy){
+Command *load_history(int *history_index){
     
+    FILE *historyptr;
+    Command *history;
+    historyptr = fopen(".history", "r");
+    char nextLine[512];
+    printf("Here\n");
+    if(historyptr == NULL){
+        perror("Couldn't find file");
+        history = 0;
+        return history;
+    }
+    while(fgets(nextLine,512,historyptr) != NULL){
+        printf("%s\n", nextLine);
+    }
+
+    fclose(historyptr);
+    return 0;
 }
 
 void add_to_history(char *command, Command *history, int *history_index) {

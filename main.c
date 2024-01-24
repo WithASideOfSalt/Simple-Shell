@@ -17,11 +17,9 @@ int main(void){
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
     int history_index = 0;
-    struct Command history[MAX_HISTORY];
+    struct Command *history;
     //Load history here
-    if(load_history(history)){
-        printf("Failed loading history");
-    }
+    history = load_history(&history_index);
     //Main loop
     while (looping){
         // Print prompt
@@ -46,6 +44,7 @@ int main(void){
              
             builtins command = get_enum(tokens[0]);
             //add any attempted command into the history
+            
             add_to_history(tokens[0], history, &history_index);
             
             //check if built in command, if not let fork handle the rest
