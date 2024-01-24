@@ -44,7 +44,6 @@ int main(void){
              
             builtins command = get_enum(tokens[0]);
             //add any attempted command into the history
-            
             add_to_history(tokens[0], history, &history_index);
             
             //check if built in command, if not let fork handle the rest

@@ -98,9 +98,9 @@ Command *load_history(int *history_index){
     
     FILE *historyptr;
     Command *history;
+    history = malloc(sizeof(Command)*MAX_HISTORY);
     historyptr = fopen(".history", "r");
     char nextLine[512];
-    printf("Here\n");
     if(historyptr == NULL){
         perror("Couldn't find file");
         history = 0;
