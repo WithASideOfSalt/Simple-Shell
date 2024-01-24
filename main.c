@@ -7,7 +7,7 @@
 
 
 int main(void){
-    
+        
     char cwd[MAX_PATH_LENGTH];
     // Get the current working directory and check for NULL wd
     if (getcwd(cwd, sizeof(cwd)) == NULL) {

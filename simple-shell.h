@@ -1,4 +1,3 @@
-#ifndef SIMPLE_SHELL_H
 #define SIMPLE_SHELL_H
 #define DELIMITERS " \t\n;&><|"
 #define MAX_PATH_LENGTH 1028
@@ -10,4 +9,3 @@ int forky_fun(char *, char* [], int);
 int get_env(char **tokens, int number_of_tokens);
 int set_env(char **tokens, int number_of_tokens);
 int restore_original_path(char *original_path);
-#endif //SIMPLE_SHELL_H
