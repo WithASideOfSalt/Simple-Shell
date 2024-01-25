@@ -17,4 +17,3 @@ int forky_fun(char *, char* [], int);
 void add_to_history(char **, Command *, int *);
 void print_history(Command *, int);
 Command *load_history(int *);
-Command *history_dup(Command const *, unsigned long);

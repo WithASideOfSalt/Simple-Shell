@@ -17,9 +17,9 @@ int main(void){
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
     int history_index = 0;
-    Command* history;
+    Command* history = malloc(sizeof(Command) * MAX_HISTORY);
     //Load history here
-    history = history_dup(load_history(&history_index), MAX_HISTORY);
+    history = load_history(&history_index);
     //Main loop
     while (looping){
         // Print prompt

@@ -143,10 +143,3 @@ void print_history(Command *history, int history_index) {
         }
     }
 }
-
-Command * history_dup(Command const * src, size_t len)
-{
-   Command * p = malloc(len * sizeof(Command));
-   memcpy(p, src, len * sizeof(Command));
-   return p;
-}
