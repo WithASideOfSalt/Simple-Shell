@@ -97,25 +97,40 @@ builtins get_enum (char * command) {
 Command *load_history(int *history_index){
     
     FILE *historyptr;
-    Command *history;
-    history = malloc(sizeof(Command)*MAX_HISTORY);
-    historyptr = fopen(".history", "r");
-    char nextLine[512];
+    Command *history = malloc(sizeof(Command) * MAX_HISTORY);
+    historyptr = fopen(".hist_list", "r");
+    char *nextLine = malloc(sizeof(char) * 512);
+    char **tokens = malloc(sizeof(char**)*MAX_TOKENS);
+    int number_of_tokens = 0;
     if(historyptr == NULL){
         perror("Couldn't find file");
-        history = 0;
         return history;
     }
-    while(fgets(nextLine,512,historyptr) != NULL){
-        printf("%s\n", nextLine);
+    while(fgets(nextLine,MAX_INPUT_LENGTH,historyptr) != NULL){
+        //nextLine[strcspn(nextLine, "\n")] = 0;
+        number_of_tokens = tokenize(nextLine, tokens);
+        add_to_history(tokens, history, history_index);
     }
-
+    free(nextLine);
+    for (int i = 0; i < number_of_tokens; i++){
+            free(tokens[i]);
+    }
+    free(tokens);
     fclose(historyptr);
-    return 0;
+    return history;
 }
 
-void add_to_history(char *command, Command *history, int *history_index) {
-    strcpy(history[(*history_index) % MAX_HISTORY].line, command);
+void add_to_history(char **command, Command *history, int *history_index) {
+    //printf("printing command adding to history: %s\n", command);
+    char temp[MAX_INPUT_LENGTH] = "";
+    int i =0;
+    while(command[i] != NULL){
+        strcat(temp, " ");
+        strcat(temp, command[i]);
+        i++;
+    }
+    strcpy(history[(*history_index) % MAX_HISTORY].line, temp);
+    strcpy(temp, "");
     history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 
     (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
 }
@@ -127,4 +142,11 @@ void print_history(Command *history, int history_index) {
             printf("%d %s\n", history[index].number, history[index].line);
         }
     }
+}
+
+Command * history_dup(Command const * src, size_t len)
+{
+   Command * p = malloc(len * sizeof(Command));
+   memcpy(p, src, len * sizeof(Command));
+   return p;
 }
