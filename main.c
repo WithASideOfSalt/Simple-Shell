@@ -76,7 +76,11 @@ int main(void){
             } 
             if (strcmp(tokens[0], "alias") == 0){
                 if(number_of_tokens > 1){
-                    aliaslist = create_alias(tokens+1, number_of_tokens-1, aliaslist); 
+                    if(number_of_tokens == 2){
+                        printf("Error: please enter a command to run/the alias you want it to be. \n");
+                    } else{
+                        aliaslist = create_alias(tokens+1, number_of_tokens-1, aliaslist); 
+                    }   
                 } else {
                     print_aliases(aliaslist);
                 }

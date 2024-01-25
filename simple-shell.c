@@ -147,11 +147,18 @@ AliasList unalias(char* arguments[], int args_len, AliasList aliaslist){
                     strcpy(aliaslist.list[z].replace_with[y], aliaslist.list[z+1].replace_with[y]);
                 }
                 aliaslist.list[z].rplc_wth_size = aliaslist.list[z+1].rplc_wth_size;
+                printf("%d, is the rplcwithsize of alias %s \n", aliaslist.list[z].rplc_wth_size, aliaslist.list[z].to_replace);
+                //setting the final entry to be empty so that it will be replaced by next added entry
+                if(z == ((aliaslist.length-1)-1)){
+                    strcpy(aliaslist.list[z+1].to_replace, "");
+                    for(int y=0;y<(aliaslist.list[z+1].rplc_wth_size-1); y++){
+                        strcpy(aliaslist.list[z+1].replace_with[y], "");
+                    }
+                    aliaslist.list[z+1].rplc_wth_size = 0;
+                    //reducing length to be equal to current length
+                    aliaslist.length = (aliaslist.length-1);
+                }
             }
-            //setting the final entry to be empty so that it will be replaced by next added entry
-            strcpy(aliaslist.list[aliaslist.length].to_replace, "");
-            //reducing length to be equal to current length
-            aliaslist.length = (aliaslist.length-1);
             return aliaslist;
         }
     }
@@ -197,7 +204,7 @@ void print_aliases(AliasList aliaslist){
     for(int i=0;i<aliaslist.length;i++){
         printf("Alias %d: %s is replaced by ", (i+1), aliaslist.list[i].to_replace);
         for(int z=0;z<aliaslist.list[i].rplc_wth_size; z++){
-            printf("%s", aliaslist.list[i].replace_with[z]);
+            printf("%s ", aliaslist.list[i].replace_with[z]);
         }
         printf("\n");
     }
