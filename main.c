@@ -86,7 +86,7 @@ int main(void){
         }
         free(tokens);
     }
-    
+    save_history(history, &history_index);
     return 0;
 }
 

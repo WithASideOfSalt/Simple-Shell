@@ -120,6 +120,19 @@ Command *load_history(int *history_index){
     return history;
 }
 
+void save_history(Command *history, int *history_index){
+    FILE *historyptr;
+    historyptr = fopen(".hist_list","w");
+    for(int i =0; i< MAX_HISTORY; i++){
+        if(history[*history_index].line == NULL){
+            break;
+        }
+        fprintf(historyptr, "%s\n" ,history[*history_index].line);
+        (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
+    }
+    fclose(historyptr);
+}
+
 void add_to_history(char **command, Command *history, int *history_index) {
     //printf("printing command adding to history: %s\n", command);
     char temp[MAX_INPUT_LENGTH] = "";
