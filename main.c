@@ -18,8 +18,6 @@ int main(void){
     int looping = 1;
     int history_index = 0;
     Command* history = malloc(sizeof(Command) * MAX_HISTORY);    
-    //Initialize history
-    initialize_history(history);    
     //Load history here
     history = load_history(&history_index);
     //Main loop
@@ -57,7 +55,7 @@ int main(void){
              
             builtins command = get_enum(tokens[0]);
             //add any attempted command into the history
-            add_to_history(tokens[0], history, &history_index);
+            add_to_history(tokens, history, &history_index);
             
             //check if built in command, if not let fork handle the rest
             switch(command){

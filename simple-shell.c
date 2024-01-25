@@ -93,13 +93,6 @@ builtins get_enum (char * command) {
     return NONE;
 }
 
-void initialize_history(Command *history) {
-    for (int i = 0; i < MAX_HISTORY; i++) {
-        history[i].number = 0;
-        history[i].line[0] = '\0'; // set the first character to the null character to create an empty string
-    }
-}
-
 Command *load_history(int *history_index){
     
     FILE *historyptr;
@@ -139,8 +132,16 @@ void save_history(Command *history, int *history_index){
     fclose(historyptr);
 }
 
-void add_to_history(char *command, Command *history, int *history_index) {
-    strcpy(history[(*history_index) % MAX_HISTORY].line, command);
+void add_to_history(char **command, Command *history, int *history_index) {
+    char temp[MAX_INPUT_LENGTH] = "";
+    int i =0;
+    while(command[i] != NULL){
+        strcat(temp, " ");
+        strcat(temp, command[i]);
+        i++;
+    }
+    strcpy(history[(*history_index) % MAX_HISTORY].line, temp);
+    strcpy(temp, "");
     history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 
     (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
 }
