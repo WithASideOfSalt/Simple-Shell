@@ -4,7 +4,7 @@
 #define MAX_TOKENS 50
 #define MAX_HISTORY 20
 
-typedef enum builtins {CD, HISTORY, ALIAS, UNALIAS, GETPATH, SETPATH, LAST_COMMAND, EXIT, NONE} builtins;
+typedef enum builtins {CD, HISTORY, ALIAS, UNALIAS, GETPATH, SETPATH, EXIT, NONE} builtins;
 
 typedef struct Command {
     int number;
@@ -18,3 +18,5 @@ void add_to_history(char *, Command *, int *);
 void print_history(Command *, int);
 int load_history(Command *);
 void initialize_history(Command *);
+void save_history(Command *, int *);
+

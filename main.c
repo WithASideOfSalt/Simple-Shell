@@ -17,13 +17,11 @@ int main(void){
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
     int history_index = 0;
-    struct Command history[MAX_HISTORY];
+    Command* history = malloc(sizeof(Command) * MAX_HISTORY);    
     //Initialize history
     initialize_history(history);    
     //Load history here
-    if(load_history(history)){
-        printf("Failed loading history\n");
-    }
+    history = load_history(&history_index);
     //Main loop
     while (looping){
         // Print prompt
@@ -37,10 +35,17 @@ int main(void){
             }
             clearerr(stdin);            
         }
-        // Check for last command
-        if (strcmp(input_buf, "!!\n") == 0){
-            strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
+       // Check for previous command, and specific command
+        char *ptr;
+        if (input_buf[0] == '!') {
+        int command_no = strtol(input_buf + 1, &ptr, 10);
+        if (command_no > 0 && command_no <= history_index && command_no <= MAX_HISTORY) {
+        strcpy(input_buf, history[(command_no - 1) % MAX_HISTORY].line);
         }
+        }   else if (strcmp(input_buf, "!!\n") == 0) {
+        strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
+        }
+        
         // Create array of strings to store tokens
         char **tokens;
         // Allocate memory to the array of char pointers
@@ -77,9 +82,6 @@ int main(void){
                 case SETPATH:
                     printf("SETPATH\n");
                     break;
-                case LAST_COMMAND:
-                    printf("LAST_COMMAND\n");
-                    break;
                 case EXIT:
                     looping = 0;
                     break;
@@ -94,7 +96,7 @@ int main(void){
         }
         free(tokens);
     }
-    
+    save_history(history, &history_index);
     return 0;
 }
 

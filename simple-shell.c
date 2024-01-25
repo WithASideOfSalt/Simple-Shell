@@ -89,7 +89,6 @@ builtins get_enum (char * command) {
     if (strcmp(command, "unalias") == 0) return UNALIAS;
     if (strcmp(command, "getpath") == 0) return GETPATH;
     if (strcmp(command, "setpath") == 0) return SETPATH;
-    if (strcmp(command, "!!") == 0) return LAST_COMMAND;
     if (strcmp(command, "exit") == 0) return EXIT;
     return NONE;
 }
@@ -101,8 +100,43 @@ void initialize_history(Command *history) {
     }
 }
 
-int load_history(Command *history){
+Command *load_history(int *history_index){
     
+    FILE *historyptr;
+    Command *history = malloc(sizeof(Command) * MAX_HISTORY);
+    historyptr = fopen(".hist_list", "r");
+    char *nextLine = malloc(sizeof(char) * 512);
+    char **tokens = malloc(sizeof(char**)*MAX_TOKENS);
+    int number_of_tokens = 0;
+    if(historyptr == NULL){
+        perror("Couldn't find file");
+        return history;
+    }
+    while(fgets(nextLine,MAX_INPUT_LENGTH,historyptr) != NULL){
+        //nextLine[strcspn(nextLine, "\n")] = 0;
+        number_of_tokens = tokenize(nextLine, tokens);
+        add_to_history(tokens, history, history_index);
+    }
+    free(nextLine);
+    for (int i = 0; i < number_of_tokens; i++){
+            free(tokens[i]);
+    }
+    free(tokens);
+    fclose(historyptr);
+    return history;
+}
+
+void save_history(Command *history, int *history_index){
+    FILE *historyptr;
+    historyptr = fopen(".hist_list","w");
+    for(int i =0; i< MAX_HISTORY; i++){
+        if(history[*history_index].line == NULL){
+            break;
+        }
+        fprintf(historyptr, "%s\n" ,history[*history_index].line);
+        (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
+    }
+    fclose(historyptr);
 }
 
 void add_to_history(char *command, Command *history, int *history_index) {
@@ -115,7 +149,7 @@ void print_history(Command *history, int history_index) {
     for (int i = 0; i < MAX_HISTORY; i++) {
         int index = (history_index + i) % MAX_HISTORY; 
         if (history[index].number != 0) { 
-            printf("%d %s\n", history[index].number, history[index].line);
+            printf("%d %s\n", i + 1, history[index].line);
         }
     }
 }
