@@ -174,7 +174,7 @@ void print_history(Command *history, int history_index) {
     for (int i = 0; i < MAX_HISTORY; i++) {
         int index = (history_index + i) % MAX_HISTORY; 
         if (history[index].number != 0) { 
-            printf("%d %s\n", history[i].number, history[index].line);
+            printf("%d %s\n", history[index].number, history[index].line);
         }
     }
 }
