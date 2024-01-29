@@ -34,15 +34,15 @@ int main(void){
             clearerr(stdin);            
         }
        // Check for previous command, and specific command
-        char *ptr;
-        if (input_buf[0] == '!') {
-        int command_no = strtol(input_buf + 1, &ptr, 10);
-        if (command_no > 0 && command_no <= history_index && command_no <= MAX_HISTORY) {
+char *ptr;
+if (strcmp(input_buf, "!!\n") == 0) {
+    strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
+} else if (input_buf[0] == '!') {
+    int command_no = strtol(input_buf + 1, &ptr, 10);
+    if (command_no > 0 && command_no <= history_index && command_no <= MAX_HISTORY) {
         strcpy(input_buf, history[(command_no - 1) % MAX_HISTORY].line);
-        }
-        }   else if (strcmp(input_buf, "!!\n") == 0) {
-        strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
-        }
+    }
+}
         
         // Create array of strings to store tokens
         char **tokens;

@@ -134,25 +134,47 @@ void save_history(Command *history, int *history_index){
     fclose(historyptr);
 }
 
+/**
+ * Adds a command to the history array.
+ *
+ * @param command The command to be added to the history.
+ * @param history The array of Command structures representing the history.
+ * @param history_index A pointer to the current index in the history array.
+ */
 void add_to_history(char **command, Command *history, int *history_index) {
+    // Concatenate the command arguments into a single string
     char temp[MAX_INPUT_LENGTH] = "";
-    int i =0;
-    while(command[i] != NULL){
+    int i = 0;
+    while (command[i] != NULL) {
         strcat(temp, " ");
         strcat(temp, command[i]);
         i++;
     }
+    
+    // Store the command in the history array
     strcpy(history[(*history_index) % MAX_HISTORY].line, temp);
     strcpy(temp, " ");
     history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 
-    (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
+    
+    // Update the history index and wrap around when reaching MAX_HISTORY
+    (*history_index) = ((*history_index) + 1) % MAX_HISTORY;
 }
 
+
+/**
+ * Prints the command history.
+ * 
+ * This function iterates through the command history array and prints the command number
+ * and the corresponding command line. It skips any empty slots in the history array.
+ * 
+ * @param history The command history array.
+ * @param history_index The index of the most recent command in the history array.
+ */
 void print_history(Command *history, int history_index) {
     for (int i = 0; i < MAX_HISTORY; i++) {
         int index = (history_index + i) % MAX_HISTORY; 
         if (history[index].number != 0) { 
-            printf("%d %s\n", history[index].number, history[index].line);
+            printf("%d %s\n", history[i].number, history[index].line);
         }
     }
 }
