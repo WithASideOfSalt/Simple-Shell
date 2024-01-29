@@ -89,7 +89,6 @@ builtins get_enum (char * command) {
     if (strcmp(command, "unalias") == 0) return UNALIAS;
     if (strcmp(command, "getpath") == 0) return GETPATH;
     if (strcmp(command, "setpath") == 0) return SETPATH;
-    if (strcmp(command, "!!") == 0) return LAST_COMMAND;
     if (strcmp(command, "exit") == 0) return EXIT;
     return NONE;
 }
@@ -110,6 +109,9 @@ Command *load_history(int *history_index){
         //nextLine[strcspn(nextLine, "\n")] = 0;
         number_of_tokens = tokenize(nextLine, tokens);
         add_to_history(tokens, history, history_index);
+        for (int i = 0; i < number_of_tokens; i++){
+            memset(tokens[i], 0, strlen(tokens[i]));
+        }
     }
     free(nextLine);
     for (int i = 0; i < number_of_tokens; i++){
@@ -123,18 +125,16 @@ Command *load_history(int *history_index){
 void save_history(Command *history, int *history_index){
     FILE *historyptr;
     historyptr = fopen(".hist_list","w");
-    for(int i =0; i< MAX_HISTORY; i++){
-        if(history[*history_index].line == NULL){
-            break;
+    for(int i = 0; i<MAX_HISTORY; i++){
+        if(strcmp(history[*history_index].line,"\0")){
+            fprintf(historyptr, "%s\n" ,history[*history_index].line);
         }
-        fprintf(historyptr, "%s\n" ,history[*history_index].line);
         (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
     }
     fclose(historyptr);
 }
 
 void add_to_history(char **command, Command *history, int *history_index) {
-    //printf("printing command adding to history: %s\n", command);
     char temp[MAX_INPUT_LENGTH] = "";
     int i =0;
     while(command[i] != NULL){
@@ -143,7 +143,7 @@ void add_to_history(char **command, Command *history, int *history_index) {
         i++;
     }
     strcpy(history[(*history_index) % MAX_HISTORY].line, temp);
-    strcpy(temp, "");
+    strcpy(temp, " ");
     history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 
     (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
 }
