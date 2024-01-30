@@ -171,10 +171,19 @@ void add_to_history(char **command, Command *history, int *history_index) {
  * @param history_index The index of the most recent command in the history array.
  */
 void print_history(Command *history, int history_index) {
+    int temp = 1;
     for (int i = 0; i < MAX_HISTORY; i++) {
         int index = (history_index + i) % MAX_HISTORY; 
         if (history[index].number != 0) { 
-            printf("%d %s\n", history[index].number, history[index].line);
+            printf("%d %s\n", temp, history[index].line);
+            temp++;
         }
     }
 }
+
+    
+   
+
+
+
+    

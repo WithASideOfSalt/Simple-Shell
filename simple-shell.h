@@ -19,4 +19,3 @@ void print_history(Command *, int);
 Command *load_history(int *);
 void initialize_history(Command *);
 void save_history(Command *, int *);
-
