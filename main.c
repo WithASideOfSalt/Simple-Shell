@@ -41,14 +41,17 @@ int main(void){
             int found_function = 0;
             char **new_tokens;
             int counter = 1;
-            int found_alias_this_loop = 1;
-            int temp;
+            int continue_loop = 1;
+            int found_alias_this_loop;
             int new_number_of_tokens;
             //ensure there is space for up to three aliases deep of tokens
             new_tokens = malloc(sizeof(char**) * (4 * (MAX_TOKENS)));
             //check for aliases in tokens[0] and alter them from aliases to the original command(s)
-            while(counter < 3 && found_alias_this_loop == 1){
-                temp = 0;
+            //it lasts until it has looped 3 times or it doesnt find an alias in the list 
+            while(counter < 4 && continue_loop == 1){
+                //temporary variable just to track whether a function has been found this loop
+                found_alias_this_loop = 0;
+                //repeats for length of array list to find alias
                 for(int i=0; i<aliaslist.length; i++){
                     if (strcmp(aliaslist.list[i].to_replace, tokens[0]) == 0){
                         //creating new integer for current number of tokens
@@ -56,6 +59,7 @@ int main(void){
                         for(int z=0; z<aliaslist.list[i].rplc_wth_size; z++){
                             //append new tokens to start of the new token list
                             new_tokens[z] = aliaslist.list[i].replace_with[z];
+                            //adding null terminator to end of token
                             strcat(new_tokens[z], "\0");
                             //if finished adding new tokens add old tokens on the end      
                             if(z == (aliaslist.list[i].rplc_wth_size-1)){
@@ -65,6 +69,7 @@ int main(void){
                                     strcat(new_tokens[z+y], "\0");
                                 }
                             }
+                            //replacing tokens with new_tokens so that it may loop properly
                             for(int x = 0; x < (new_number_of_tokens-1); x++){
                                 strcpy(tokens[x], new_tokens[x]);
                                 strcat(tokens[x], "\0");
@@ -73,12 +78,15 @@ int main(void){
                         //repeating for all tokens except one as that one has been replaced by its alias
                         //replace with size is reduced by 1 so that it is the index rather than the number
                         found_function = 1;
-                        temp = 1;
+                        //setting found alias to one
+                        found_alias_this_loop = 1;
                     } 
                 }
-                if(temp == 0){
-                    found_alias_this_loop = 0;
+                //end loop if havent found an alias in the loop
+                if(found_alias_this_loop == 0){
+                    continue_loop = 0;
                 }
+                //increment counter
                 counter++;
             }
             //after subbing in checking for exit at position 0
