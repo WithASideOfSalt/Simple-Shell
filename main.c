@@ -33,39 +33,60 @@ int main(void){
         // Create array of strings to store tokens
         char **tokens;
         // Allocate memory to the array of char pointers
-        tokens = malloc(sizeof(char**)*MAX_TOKENS);
+        tokens = malloc(sizeof(char**)*(4 * MAX_TOKENS));
         // Parse input into tokens
         int number_of_tokens = tokenize(input_buf, tokens); 
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
             int found_function = 0;
+            char **new_tokens;
+            int counter = 1;
+            int found_alias_this_loop = 1;
+            int temp;
+            int new_number_of_tokens;
+            //ensure there is space for up to three aliases deep of tokens
+            new_tokens = malloc(sizeof(char**) * (4 * (MAX_TOKENS)));
             //check for aliases in tokens[0] and alter them from aliases to the original command(s)
-            for(int i=0; i<aliaslist.length; i++){
-                if (strcmp(aliaslist.list[i].to_replace, tokens[0]) == 0){
-                    char **new_tokens;
-                    //creating new integer for current number of tokens
-                    int new_number_of_tokens = (number_of_tokens+aliaslist.list[i].rplc_wth_size);
-                    //ensure there is space for new tokens
-                    new_tokens = malloc(sizeof(char*) * (2 * (MAX_TOKENS)));
-                    for(int z=0; z<aliaslist.list[i].rplc_wth_size; z++){
-                        //append new tokens to start of the new token list
-                        new_tokens[z] = aliaslist.list[i].replace_with[z];
-                        //if finished adding new tokens add old tokens on the end      
-                        if(z == (aliaslist.list[i].rplc_wth_size-1)){
-                            //repeat equal to the number of tokens -z so that exactly the max index is used
-                            for(int y=1; y<((new_number_of_tokens)-z); y++){
-                                new_tokens[z+y] = tokens[y];
+            while(counter < 3 && found_alias_this_loop == 1){
+                temp = 0;
+                for(int i=0; i<aliaslist.length; i++){
+                    if (strcmp(aliaslist.list[i].to_replace, tokens[0]) == 0){
+                        //creating new integer for current number of tokens
+                        new_number_of_tokens = ((number_of_tokens-1)+aliaslist.list[i].rplc_wth_size);
+                        printf("number of tokens - %d \n", new_number_of_tokens);
+                        printf("replace with size - %d \n", aliaslist.list[i].rplc_wth_size);
+                        for(int z=0; z<aliaslist.list[i].rplc_wth_size; z++){
+                            //append new tokens to start of the new token list
+                            new_tokens[z] = aliaslist.list[i].replace_with[z];
+                            strcat(new_tokens[z], "\0");
+                            //if finished adding new tokens add old tokens on the end      
+                            if(z == (aliaslist.list[i].rplc_wth_size-1)){
+                                //repeat equal to the number of tokens -z so that exactly the max index is used
+                                for(int y=1; y<((new_number_of_tokens)-z); y++){
+                                    strcpy(new_tokens[z+y], tokens[y]);
+                                    strcat(new_tokens[z+y], "\0");
+                                }
+                            }
+                            for(int x = 0; x < (new_number_of_tokens-1); x++){
+                                strcpy(tokens[x], new_tokens[x]);
+                                strcat(tokens[x], "\0");
+                            }
                         }
-                    }
-                    }
-                    //repeating for all tokens except one as that one has been replaced by its alias
-                    //replace with size is reduced by 1 so that it is the index rather than the number
-                    
-                    found_function = 1;
-                    forky_fun(new_tokens[0], new_tokens+1, ((number_of_tokens-1)+(aliaslist.list[i].rplc_wth_size-1)));
-                } 
+                        //repeating for all tokens except one as that one has been replaced by its alias
+                        //replace with size is reduced by 1 so that it is the index rather than the number
+                        found_function = 1;
+                        temp = 1;
+                    } 
+                }
+                if(temp == 0){
+                    found_alias_this_loop = 0;
+                }
+                counter++;
             }
             //after subbing in checking for exit at position 0
+            if(found_function == 1){
+                forky_fun(new_tokens[0], new_tokens+1, new_number_of_tokens);
+            }
             if (strcmp(tokens[0], "exit") == 0){
                 looping = 0;
                 found_function = 1;
@@ -91,10 +112,12 @@ int main(void){
                 forky_fun(tokens[0], tokens+1, number_of_tokens-1);
             }
         }
+        //printf("Before Free\n");
         for (int i = 0; i < number_of_tokens; i++){
             free(tokens[i]);
         }
         free(tokens);
+        //printf("After free");
     }
     save_aliases(aliaslist);
     return 0;
