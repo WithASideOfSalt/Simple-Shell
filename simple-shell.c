@@ -100,19 +100,16 @@ AliasList read_aliases(){
         token = strtok(NULL, DELIMITERS);
         int x = 0;
         while (token != NULL){
-            printf("x:%d\n", x);
             strcpy(aliases.list[i].replace_with[x], token);
             token = strtok(NULL, DELIMITERS);
             x++;
             
         }
         aliases.list[i].rplc_wth_size = x;
-        printf("i:%d\n", i);
         i++;
    }
-   printf("i:%d\n", i);
    aliases.length = i;
-   printf("aliases length:%d\n", aliases.length);
+   printf("Imported %d saved aliases \n", aliases.length);
    fclose(alias_file);
    return aliases;
 }

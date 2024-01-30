@@ -53,8 +53,6 @@ int main(void){
                     if (strcmp(aliaslist.list[i].to_replace, tokens[0]) == 0){
                         //creating new integer for current number of tokens
                         new_number_of_tokens = ((number_of_tokens-1)+aliaslist.list[i].rplc_wth_size);
-                        printf("number of tokens - %d \n", new_number_of_tokens);
-                        printf("replace with size - %d \n", aliaslist.list[i].rplc_wth_size);
                         for(int z=0; z<aliaslist.list[i].rplc_wth_size; z++){
                             //append new tokens to start of the new token list
                             new_tokens[z] = aliaslist.list[i].replace_with[z];
