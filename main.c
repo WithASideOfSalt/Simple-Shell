@@ -48,7 +48,11 @@ int main(void){
             new_tokens = malloc(sizeof(char**) * (4 * (MAX_TOKENS)));
             //check for aliases in tokens[0] and alter them from aliases to the original command(s)
             //it lasts until it has looped 3 times or it doesnt find an alias in the list 
-            while(counter < 4 && continue_loop == 1){
+            while(counter < 5 && continue_loop == 1){
+                //if looped 3 times increase counter so can throw error message
+                if(counter == 4){
+                    counter++;
+                }
                 //temporary variable just to track whether a function has been found this loop
                 found_alias_this_loop = 0;
                 //repeats for length of array list to find alias
@@ -89,10 +93,13 @@ int main(void){
                 //increment counter
                 counter++;
             }
-            //after subbing in checking for exit at position 0
-            if(found_function == 1){
+            if(counter > 4){
+                printf("The entered alias has attempted to loop 4 or more times which is past the limit please alter aliases \n");
+            }
+            if(found_function == 1 && counter <= 4){
                 forky_fun(new_tokens[0], new_tokens+1, new_number_of_tokens);
             }
+            //after subbing in checking for exit at position 0
             if (strcmp(tokens[0], "exit") == 0){
                 looping = 0;
                 found_function = 1;
