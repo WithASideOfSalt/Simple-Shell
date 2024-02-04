@@ -18,3 +18,4 @@ void add_to_history(char **, Command *, int *);
 void print_history(Command *, int);
 Command *load_history(int *);
 void save_history(Command *, int *);
+char* get_command_from_history(char *, Command *, int);
