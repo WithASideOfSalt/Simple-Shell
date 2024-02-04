@@ -180,10 +180,3 @@ void print_history(Command *history, int history_index) {
         }
     }
 }
-
-    
-   
-
-
-
-    

@@ -33,6 +33,16 @@ int main(void){
             }
             clearerr(stdin);            
         }
+       // Check for previous command, and specific command
+        char *ptr;
+        if (strcmp(input_buf, "!!\n") == 0) {
+         strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
+        } else if (input_buf[0] == '!') {
+        int command_no = strtol(input_buf + 1, &ptr, 10);
+        if (command_no > 0 && command_no <= history_index && command_no <= MAX_HISTORY) {
+        strcpy(input_buf, history[(command_no - 1) % MAX_HISTORY].line);
+    }
+}
         
         // Create array of strings to store tokens
         char **tokens;
@@ -42,60 +52,7 @@ int main(void){
         int number_of_tokens = tokenize(input_buf, tokens); 
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
-             // Check for last command (!!), specific command (!n), or command relative to last (!-n)
-            if (tokens[0][0] == '!'){
-                // Check for last command (!!)
-                if (tokens[0][1] == '!'){
-                    // Check if there is a last command
-                    if (history_index > 0){
-                        // Copy the last command into the input buffer
-                        strcpy(input_buf, history[history_index-1].line);
-                        // Parse the input buffer into tokens
-                        number_of_tokens = tokenize(input_buf, tokens);
-                    }
-                    else{
-                        printf("No commands in history.\n");
-                        continue;
-                    }
-                }
-                // Check for specific command (!n)
-                else if (tokens[0][1] >= '0' && tokens[0][1] <= '20'){
-                    // Convert the number to an int
-                    int command_number = atoi(tokens[0]+1);
-                    // Check if the command number is valid
-                    if (command_number > 0 && command_number <= history_index){
-                        // Copy the command into the input buffer
-                        strcpy(input_buf, history[command_number-1].line);
-                        // Parse the input buffer into tokens
-                        number_of_tokens = tokenize(input_buf, tokens);
-                    }
-                    else{
-                        printf("No such command in history.\n");
-                        continue;
-                    }
-                }
-                // Check for command relative to last (!-n)
-                else if (tokens[0][1] == '-'){
-                    // Convert the number to an int
-                    int command_number = atoi(tokens[0]+2);
-                    // Check if the command number is valid
-                    if (command_number > 0 && command_number <= history_index){
-                        // Copy the command into the input buffer
-                        strcpy(input_buf, history[history_index-command_number].line);
-                        // Parse the input buffer into tokens
-                        number_of_tokens = tokenize(input_buf, tokens);
-                    }
-                    else{
-                        printf("No such command in history.\n");
-                        continue;
-                    }
-                }
-                else{
-                    printf("Invalid command.\n");
-                    continue;
-                }
-            }
-
+             
             builtins command = get_enum(tokens[0]);
             //add any attempted command into the history
             add_to_history(tokens, history, &history_index);
