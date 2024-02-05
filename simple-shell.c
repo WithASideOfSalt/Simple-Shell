@@ -51,7 +51,10 @@ int forky_fun(char *command, char* arguments[], int args_len){
         argv[i+1] = NULL;
         // Execute
         execvp(command, argv);
-        perror(command);
+        char error_msg[MAX_INPUT_LENGTH+strlen("Command not found: ")];
+        strcpy(error_msg, "Command not found: ");
+        strcat(error_msg, command);
+        perror(error_msg);
         _exit(EXIT_FAILURE);
     }
 }
