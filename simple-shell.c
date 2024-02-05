@@ -51,7 +51,7 @@ int forky_fun(char *command, char* arguments[], int args_len){
         argv[i+1] = NULL;
         // Execute
         execvp(command, argv);
-        perror("Error:");
+        perror(command);
         _exit(EXIT_FAILURE);
     }
 }
