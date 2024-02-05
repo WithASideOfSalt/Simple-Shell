@@ -128,6 +128,20 @@ int restore_original_path(char *original_path) {
     return 0;
 }
 
+int changeDirectory(char **tokens, int number_of_tokens) {
+    if (number_of_tokens != 2) {
+        printf("Error: Incorrect usage of cd command. Usage: cd <directory>\n");
+        return -1;
+    }
+    else {
+        if (chdir(tokens[1]) != 0) {
+            perror("chdir() error");
+            return -1;
+        }
+    }
+    return 0;
+        
+}
 
      
 

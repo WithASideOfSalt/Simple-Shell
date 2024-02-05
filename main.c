@@ -6,6 +6,7 @@
 
 
 
+
 int main(void){
         
     char cwd[MAX_PATH_LENGTH];
@@ -74,6 +75,9 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
         else if (strcmp(tokens[0], "setpath") == 0) {
             set_env(tokens, number_of_tokens);
         } 
+        else if (strcmp(tokens[0], "cd") == 0 ) {
+            changeDirectory(tokens, number_of_tokens);
+        }
         else {
                 forky_fun(tokens[0], tokens+1, number_of_tokens-1);
             }

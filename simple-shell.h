@@ -9,3 +9,4 @@ int forky_fun(char *, char* [], int);
 int get_env(char **tokens, int number_of_tokens);
 int set_env(char **tokens, int number_of_tokens);
 int restore_original_path(char *original_path);
+int changeDirectory(char **tokens, int number_of_tokens);
