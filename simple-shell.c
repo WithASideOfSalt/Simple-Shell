@@ -135,7 +135,10 @@ int changeDirectory(char **tokens, int number_of_tokens) {
     }
     else {
         if (chdir(tokens[1]) != 0) {
-            perror("chdir() error");
+            char error_msg[MAX_INPUT_LENGTH+strlen("cd: ")];
+            strcpy(error_msg, "cd: ");
+            strcat(error_msg, tokens[1]);
+            perror(error_msg);
             return -1;
         }
     }
