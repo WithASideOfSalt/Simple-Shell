@@ -76,7 +76,11 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
             set_env(tokens, number_of_tokens);
         } 
         else if (strcmp(tokens[0], "cd") == 0 ) {
-            changeDirectory(tokens, number_of_tokens);
+            if(number_of_tokens == 1){
+                chdir(home_directory);
+            } else{
+                changeDirectory(tokens, number_of_tokens);
+            }   
         }
         else {
                 forky_fun(tokens[0], tokens+1, number_of_tokens-1);
