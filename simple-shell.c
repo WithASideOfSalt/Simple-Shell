@@ -24,7 +24,6 @@ int forky_fun(char *command, char* arguments[], int args_len){
         if (status == 0){
             return 0;
         } else if (status==256) { // Program not found error code
-            printf("Error: Command not found\n");
             return -1;
         } else if (status==512){ // Argument not found
             return -1;
@@ -52,6 +51,10 @@ int forky_fun(char *command, char* arguments[], int args_len){
         argv[i+1] = NULL;
         // Execute
         execvp(command, argv);
+        char error_msg[MAX_INPUT_LENGTH+strlen("Command not found: ")];
+        strcpy(error_msg, "Command not found: ");
+        strcat(error_msg, command);
+        perror(error_msg);
         _exit(EXIT_FAILURE);
     }
 }
@@ -135,7 +138,10 @@ int changeDirectory(char **tokens, int number_of_tokens) {
     }
     else {
         if (chdir(tokens[1]) != 0) {
-            perror("chdir() error");
+            char error_msg[MAX_INPUT_LENGTH+strlen("cd: ")];
+            strcpy(error_msg, "cd: ");
+            strcat(error_msg, tokens[1]);
+            perror(error_msg);
             return -1;
         }
     }
