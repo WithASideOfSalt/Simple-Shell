@@ -45,6 +45,10 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
 
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
+    int history_index = 0;
+    Command* history = malloc(sizeof(Command) * MAX_HISTORY);    
+    //Load history here
+    history = load_history(&history_index);
     //Main loop
     while (looping){
         // Print prompt
@@ -58,6 +62,10 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
             }
             clearerr(stdin);            
         }
+      
+        // Check if the input is a history invocation
+        strcpy(input_buf,get_command_from_history(input_buf, history, history_index));
+        
         // Create array of strings to store tokens
         char **tokens;
         // Allocate memory to the array of char pointers
@@ -66,24 +74,44 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
         int number_of_tokens = tokenize(input_buf, tokens); 
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
-            if (strcmp(tokens[0], "exit") == 0){
-                looping = 0;
-            } 
-            else if (strcmp(tokens[0], "getpath") == 0) {
-            get_env(tokens, number_of_tokens);
-        } 
-        else if (strcmp(tokens[0], "setpath") == 0) {
-            set_env(tokens, number_of_tokens);
-        } 
-        else if (strcmp(tokens[0], "cd") == 0 ) {
-            if(number_of_tokens == 1){
-                chdir(home_directory);
-            } else{
-                changeDirectory(tokens, number_of_tokens);
-            }   
-        }
-        else {
-                forky_fun(tokens[0], tokens+1, number_of_tokens-1);
+             
+            builtins command = get_enum(tokens[0]);
+            //add any attempted command into the history
+            add_to_history(tokens, history, &history_index);
+            
+            //check if built in command, if not let fork handle the rest
+            switch(command){
+                case CD:
+                    if(number_of_tokens == 1){
+                        chdir(home_directory);
+                    } else {
+                        changeDirectory(tokens, number_of_tokens);
+                    }
+                    break;
+                case HISTORY:
+                    print_history(history, history_index);    
+                    break;
+                case ALIAS:
+                    printf("ALIAS\n");
+                    //Stage 7 stuff
+                    break;
+                case UNALIAS:
+                    printf("UNALIAS\n");
+                    //Stage 7 stuff
+                    break;
+                case GETPATH:
+                    get_env(tokens, number_of_tokens);
+                    break;
+                case SETPATH:
+                    set_env(tokens, number_of_tokens);
+                    break;
+                case EXIT:
+                    looping = 0;
+                    break;
+                default:
+                    forky_fun(tokens[0], tokens+1, number_of_tokens-1);
+                    printf("DEFAULT\n");
+                    break;
             }
         }
         for (int i = 0; i < number_of_tokens; i++){
@@ -95,8 +123,7 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
     
     // Restore original path before exiting
     restore_original_path(cwd);
-    
-
+    save_history(history, &history_index);
     return 0;
 }
 

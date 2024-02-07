@@ -80,6 +80,136 @@ int tokenize(char *str, char **tokens){
     return i;
 }
 
+/*
+ *Returns the enum value of the command.
+ *@param command The command to check.
+ *@return The enum value of the command.
+ */
+builtins get_enum (char * command) {
+    if (strcmp(command, "cd") == 0) return CD;
+    if (strcmp(command, "history") == 0) return HISTORY;
+    if (strcmp(command, "alias") == 0) return ALIAS;
+    if (strcmp(command, "unalias") == 0) return UNALIAS;
+    if (strcmp(command, "getpath") == 0) return GETPATH;
+    if (strcmp(command, "setpath") == 0) return SETPATH;
+    if (strcmp(command, "exit") == 0) return EXIT;
+    return NONE;
+}
+
+Command *load_history(int *history_index){
+    
+    FILE *historyptr;
+    Command *history = malloc(sizeof(Command) * MAX_HISTORY);
+    historyptr = fopen(".hist_list", "r");
+    char *nextLine = malloc(sizeof(char) * 512);
+    char **tokens = malloc(sizeof(char**)*MAX_TOKENS);
+    int number_of_tokens = 0;
+    if(historyptr == NULL){
+        perror("Couldn't find file");
+        return history;
+    }
+    while(fgets(nextLine,MAX_INPUT_LENGTH,historyptr) != NULL){
+        //nextLine[strcspn(nextLine, "\n")] = 0;
+        number_of_tokens = tokenize(nextLine, tokens);
+        add_to_history(tokens, history, history_index);
+        for (int i = 0; i < number_of_tokens; i++){
+            memset(tokens[i], 0, strlen(tokens[i]));
+        }
+    }
+    free(nextLine);
+    for (int i = 0; i < number_of_tokens; i++){
+            free(tokens[i]);
+    }
+    free(tokens);
+    fclose(historyptr);
+    return history;
+}
+
+void save_history(Command *history, int *history_index){
+    FILE *historyptr;
+    historyptr = fopen(".hist_list","w");
+    for(int i = 0; i<MAX_HISTORY; i++){
+        if(strcmp(history[*history_index].line,"\0")){
+            fprintf(historyptr, "%s\n" ,history[*history_index].line);
+        }
+        (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
+    }
+    fclose(historyptr);
+}
+
+/**
+ * Adds a command to the history array.
+ *
+ * @param command The command to be added to the history.
+ * @param history The array of Command structures representing the history.
+ * @param history_index A pointer to the current index in the history array.
+ */
+void add_to_history(char **command, Command *history, int *history_index) {
+    // Concatenate the command arguments into a single string
+    char temp[MAX_INPUT_LENGTH] = "";
+    int i = 0;
+    while (command[i] != NULL) {
+        strcat(temp, " ");
+        strcat(temp, command[i]);
+        i++;
+    }
+    
+    // Store the command in the history array
+    strcpy(history[(*history_index) % MAX_HISTORY].line, temp);
+    strcpy(temp, " ");
+    history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 
+    
+    // Update the history index and wrap around when reaching MAX_HISTORY
+    (*history_index) = ((*history_index) + 1) % MAX_HISTORY;
+}
+
+
+/**
+ * Prints the command history.
+ * 
+ * This function iterates through the command history array and prints the command number
+ * and the corresponding command line. It skips any empty slots in the history array.
+ * 
+ * @param history The command history array.
+ * @param history_index The index of the most recent command in the history array.
+ */
+void print_history(Command *history, int history_index) {
+    int temp = 1;
+    for (int i = 0; i < MAX_HISTORY; i++) {
+        int index = (history_index + i) % MAX_HISTORY; 
+        if (history[index].number != 0) { 
+            printf("%d %s\n", temp, history[index].line);
+            temp++;
+        }
+    }
+}
+
+char* get_command_from_history(char* input_buf, Command* history, int history_index) {
+    char *ptr;
+    if (strcmp(input_buf, "!!\n") == 0) {
+        strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
+    } else if (input_buf[0] == '!') {
+        int command_no;
+        if (input_buf[1] == '-') {
+            command_no = history_index - strtol(input_buf + 2, &ptr, 10);
+        } else {
+            command_no = strtol(input_buf + 1, &ptr, 10);
+        }
+
+        if (command_no > 0 && command_no <= history_index && command_no <= MAX_HISTORY) {
+            strcpy(input_buf, history[(command_no - 1) % MAX_HISTORY].line);
+        } else {
+            printf("Error: Invalid history invocation\n");
+            // Set input_buf to an empty string to indicate an error
+            input_buf[0] = '\0';
+        }
+    }
+    return input_buf;
+}
+
+
+
+
 int get_env(char **tokens, int number_of_tokens) {
     if (number_of_tokens != 1) {
         printf("Error: Incorrect usage of getpath command. Usage: getpath\n");
