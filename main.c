@@ -36,7 +36,7 @@ int main(void){
       
         // Check if the input is a history invocation
         strcpy(input_buf,get_command_from_history(input_buf, history, history_index));
-        
+    
         // Create array of strings to store tokens
         char **tokens;
         // Allocate memory to the array of char pointers

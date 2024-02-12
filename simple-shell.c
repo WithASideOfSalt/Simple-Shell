@@ -189,12 +189,14 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
         int command_no;
         if (input_buf[1] == '-') {
             command_no = history_index - strtol(input_buf + 2, &ptr, 10);
+            if (command_no < 0) {
+                command_no += MAX_HISTORY;
+            }
         } else {
-            command_no = strtol(input_buf + 1, &ptr, 10);
+            command_no = strtol(input_buf + 1, &ptr, 10) - 1;
         }
-
-        if (command_no > 0 && command_no <= history_index && command_no <= MAX_HISTORY) {
-            strcpy(input_buf, history[(command_no - 1) % MAX_HISTORY].line);
+        if (command_no >= 0 && command_no < history_index && command_no < MAX_HISTORY) {
+            strcpy(input_buf, history[command_no % MAX_HISTORY].line);
         } else {
             printf("Error: Invalid history invocation\n");
             // Set input_buf to an empty string to indicate an error
@@ -203,5 +205,3 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
     }
     return input_buf;
 }
-
-
