@@ -110,6 +110,7 @@ Command *load_history(int *history_index){
     }
     while(fgets(nextLine,MAX_INPUT_LENGTH,historyptr) != NULL){
         //nextLine[strcspn(nextLine, "\n")] = 0;
+        nextLine[strlen(nextLine) -1] = '\0';
         number_of_tokens = tokenize(nextLine, tokens);
         add_to_history(tokens, history, history_index);
         for (int i = 0; i < number_of_tokens; i++){
@@ -180,7 +181,7 @@ void print_history(Command *history, int history_index) {
     for (int i = 0; i < MAX_HISTORY; i++) {
         int index = (history_index + i) % MAX_HISTORY; 
         if (history[index].number != 0) { 
-            printf("%d %s\n", temp, history[index].line);
+            printf("%d %s %i\n", temp, history[index].line, history[index].number);
             temp++;
         }
     }
@@ -192,14 +193,28 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
         strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
     } else if (input_buf[0] == '!') {
         int command_no;
+        int type;
         if (input_buf[1] == '-') {
             command_no = history_index - strtol(input_buf + 2, &ptr, 10);
+            if(command_no < 0)
+                command_no += MAX_HISTORY;
+            type = 1;
         } else {
             command_no = strtol(input_buf + 1, &ptr, 10);
+            type = 2;
         }
-
-        if (command_no > 0 && command_no <= history_index && command_no <= MAX_HISTORY) {
-            strcpy(input_buf, history[(command_no - 1) % MAX_HISTORY].line);
+        printf("attempted command %i\n", command_no);
+        if (command_no > 0 && command_no <= MAX_HISTORY) {
+            if(type == 1){
+                int temp = history_index - command_no;
+                if(temp < 0)
+                    temp+= MAX_HISTORY;
+                printf("this is the actual position %i\n", temp - 1);
+                strcpy(input_buf, history[(temp - 1) % MAX_HISTORY].line);
+            }
+            else{
+                strcpy(input_buf, history[command_no].line);
+            }
         } else {
             printf("Error: Invalid history invocation\n");
             // Set input_buf to an empty string to indicate an error
