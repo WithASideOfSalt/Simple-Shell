@@ -128,8 +128,12 @@ Command *load_history(int *history_index){
 void save_history(Command *history, int *history_index){
     FILE *historyptr;
     historyptr = fopen(".hist_list","w");
+    if(historyptr == NULL){
+        perror("error opening file");
+        return;
+    }
     for(int i = 0; i<MAX_HISTORY; i++){
-        if(strcmp(history[*history_index].line,"\0")){
+        if(strcmp(history[*history_index].line,"")){
             fprintf(historyptr, "%s\n" ,history[*history_index].line);
         }
         (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
@@ -148,21 +152,19 @@ void add_to_history(char **command, Command *history, int *history_index) {
     // Concatenate the command arguments into a single string
     char temp[MAX_INPUT_LENGTH] = "";
     int i = 0;
-    while (command[i] != NULL) {
+    while (command[i] != NULL && strcmp(command[i], " ")) {
         strcat(temp, " ");
         strcat(temp, command[i]);
+        //printf("%s\n", temp);
         i++;
     }
-    
     // Store the command in the history array
     strcpy(history[(*history_index) % MAX_HISTORY].line, temp);
     strcpy(temp, " ");
     history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 
-    
     // Update the history index and wrap around when reaching MAX_HISTORY
     (*history_index) = ((*history_index) + 1) % MAX_HISTORY;
 }
-
 
 /**
  * Prints the command history.
@@ -248,7 +250,6 @@ int restore_original_path(char *original_path) {
         perror("setenv() error");
         return -1;
     }
-
        // Print the restored path
     char *restored_path = getenv("PATH");
     if (restored_path != NULL) {

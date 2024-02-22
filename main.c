@@ -110,7 +110,7 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
                     break;
                 default:
                     forky_fun(tokens[0], tokens+1, number_of_tokens-1);
-                    printf("DEFAULT\n");
+                    //printf("DEFAULT\n");
                     break;
             }
         }
@@ -121,8 +121,9 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
     }
 
     
-    // Restore original path before exiting
+    // Restore original path before exiting and directory
     restore_original_path(cwd);
+    chdir(home_directory);
     save_history(history, &history_index);
     return 0;
 }
