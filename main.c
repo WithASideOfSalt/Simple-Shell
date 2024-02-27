@@ -141,7 +141,7 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
             add_to_history(tokens, history, &history_index);
             
             //check if command has already been found with aliases
-            if(found_function == 1){
+            if(found_function == 0){
                 //check if built in command, if not let fork handle the rest
                 switch(command){
                     case CD:
