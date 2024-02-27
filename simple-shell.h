@@ -11,6 +11,18 @@ typedef struct Command {
     int number;
     char line[MAX_INPUT_LENGTH];
 } Command;
+#define MAX_ALIASES 10
+
+typedef struct Alias{
+    char to_replace[MAX_INPUT_LENGTH];
+    char replace_with[MAX_TOKENS][MAX_INPUT_LENGTH];
+    int rplc_wth_size;
+} Alias;
+
+typedef struct AliasList{
+    Alias list[MAX_ALIASES];
+    int length;
+} AliasList;
 
 int tokenize(char *, char **);
 builtins get_enum (char *);
@@ -24,3 +36,8 @@ int get_env(char **tokens, int number_of_tokens);
 int set_env(char **tokens, int number_of_tokens);
 int restore_original_path(char *original_path);
 int changeDirectory(char **tokens, int number_of_tokens);
+AliasList read_aliases();
+int save_aliases(AliasList);
+AliasList unalias(char* [], int, AliasList);
+AliasList create_alias(char* [], int, AliasList);
+void print_aliases();

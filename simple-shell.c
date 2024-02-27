@@ -289,3 +289,135 @@ int changeDirectory(char **tokens, int number_of_tokens) {
     return 0;
         
 }
+
+/*
+ *Loads the aliases from file.
+ *@return The AliasList loaded from .aliases
+ */
+AliasList read_aliases(){
+    FILE *alias_file;
+    char buf[512];
+    AliasList aliases;
+
+    alias_file = fopen(".aliases" , "r");
+    if(alias_file == NULL) {
+      perror("Error opening alias file");
+      aliases.length = 0;
+      return aliases;
+   }
+   int i = 0;
+   while(fgets(buf, 512, alias_file) != NULL) {
+        char *token;
+        token = strtok(buf, DELIMITERS);
+        strcpy(aliases.list[i].to_replace, token);
+        token = strtok(NULL, DELIMITERS);
+        int x = 0;
+        while (token != NULL){
+            strcpy(aliases.list[i].replace_with[x], token);
+            token = strtok(NULL, DELIMITERS);
+            x++;
+            
+        }
+        aliases.list[i].rplc_wth_size = x;
+        i++;
+   }
+   aliases.length = i;
+   printf("Imported %d saved aliases \n", aliases.length);
+   fclose(alias_file);
+   return aliases;
+}
+
+int save_aliases(AliasList a_list){
+    FILE *alias_file;
+    alias_file = fopen(".aliases" , "w");
+    for (int alias = 0; alias < a_list.length; alias++){
+        char line[MAX_INPUT_LENGTH];
+        memset(line,0,strlen(line)); // Make sure line is empty
+        strcat(line, a_list.list[alias].to_replace);
+        for (int i = 0; i<a_list.list[alias].rplc_wth_size; i++){
+            strcat(line, " ");
+            strcat(line, a_list.list[alias].replace_with[i]);
+        }
+        strcat(line, "\n");
+        fprintf(alias_file, "%s", line);
+    }
+    return 0;
+}
+
+AliasList unalias(char* arguments[], int args_len, AliasList aliaslist){
+    int found = 0;
+    for(int i=0;i<aliaslist.length;i++){
+        //check if supplied alias is equal to any stored alias
+        if(strcmp(aliaslist.list[i].to_replace, arguments[0]) == 0){
+            found = 1;
+            //attempting to free memory used for the list by overwriting all the removed entry with the subsequent entry and repeat for the remainder of the list
+            for(int z=i;z<(aliaslist.length-1);z++){
+                strcpy(aliaslist.list[z].to_replace, aliaslist.list[z+1].to_replace);
+                for(int y=0;y<(aliaslist.list[i].rplc_wth_size-1); y++){
+                    strcpy(aliaslist.list[z].replace_with[y], aliaslist.list[z+1].replace_with[y]);
+                }
+                aliaslist.list[z].rplc_wth_size = aliaslist.list[z+1].rplc_wth_size;
+                printf("%d, is the rplcwithsize of alias %s \n", aliaslist.list[z].rplc_wth_size, aliaslist.list[z].to_replace);
+                //setting the final entry to be empty so that it will be replaced by next added entry
+                if(z == ((aliaslist.length-1)-1)){
+                    strcpy(aliaslist.list[z+1].to_replace, "");
+                    for(int y=0;y<(aliaslist.list[z+1].rplc_wth_size-1); y++){
+                        strcpy(aliaslist.list[z+1].replace_with[y], "");
+                    }
+                    aliaslist.list[z+1].rplc_wth_size = 0;
+                    //reducing length to be equal to current length
+                    aliaslist.length = (aliaslist.length-1);
+                }
+            }
+            return aliaslist;
+        }
+    }
+    if(found == 0){
+        printf("Error: alias not found \n");
+    }
+    return aliaslist;
+}
+//the code to create new aliases this does not save them to any other file it just adds them for the current run
+AliasList create_alias(char* arguments[], int args_len, AliasList aliaslist){
+    //check for attempted creation of duplicate aliases
+    for(int i=0;i<aliaslist.length;i++){
+        if(strcmp(aliaslist.list[i].to_replace, arguments[0]) == 0){
+            printf("Error: creation of duplicate alias:%s replaced older alias \n", arguments[0]);
+            //remove old alias
+            aliaslist = unalias(arguments, args_len, aliaslist);
+        }
+    }
+    if(aliaslist.length < 10){
+        //create new instance of struct
+        Alias newalias;
+        //populate struct
+        newalias.rplc_wth_size = (args_len-1);
+        strcpy(newalias.to_replace, arguments[0]);
+        for(int i=0; i<(args_len-1); i++){
+            strcpy(newalias.replace_with[i], arguments[i+1]);
+        }
+        //update aliaslist
+        aliaslist.list[aliaslist.length] = newalias;
+        aliaslist.length = (aliaslist.length+1); 
+    } else {
+        printf("Error: alias list is full no more can be set \n");
+    }
+    return aliaslist;
+}
+
+void print_aliases(AliasList aliaslist){
+    //check if there are no aliases
+    if(aliaslist.length == 0){
+        printf("Error: no aliases found \n");
+    }
+    //print all aliases
+    for(int i=0;i<aliaslist.length;i++){
+        printf("Alias %d: %s is replaced by ", (i+1), aliaslist.list[i].to_replace);
+        for(int z=0;z<aliaslist.list[i].rplc_wth_size; z++){
+            printf("%s ", aliaslist.list[i].replace_with[z]);
+        }
+        printf("\n");
+    }
+
+}
+
