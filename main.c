@@ -63,9 +63,10 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
             }
             clearerr(stdin);            
         }
-      
+
+        int fromHistory = 0;
         // Check if the input is a history invocation
-        strcpy(input_buf,get_command_from_history(input_buf, history, history_index));
+        strcpy(input_buf,get_command_from_history(input_buf, history, history_index, &fromHistory));
         
         // Create array of strings to store tokens
         char **tokens;
@@ -138,7 +139,9 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
             } 
             builtins command = get_enum(tokens[0]);
             //add any attempted command into the history
-            add_to_history(tokens, history, &history_index);
+            if(fromHistory == 0){
+                add_to_history(tokens, history, &history_index);
+            }
             
             //check if command has already been found with aliases
             if(found_function == 0){
@@ -152,7 +155,11 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
                         }
                         break;
                     case HISTORY:
-                        print_history(history, history_index);    
+                        if(number_of_tokens > 1){
+                            printf("Error: incorrect usage of history. Usage: history");
+                        }else{
+                            print_history(history, history_index);  
+                        }  
                         break;
                     case ALIAS:
                         if(number_of_tokens > 1){
@@ -176,6 +183,9 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
                         break;
                     case EXIT:
                         looping = 0;
+                        break;
+                    case CLEARH:
+                        clear_history(history, &history_index);
                         break;
                     default:
                         forky_fun(tokens[0], tokens+1, number_of_tokens-1);

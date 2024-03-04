@@ -93,6 +93,7 @@ builtins get_enum (char * command) {
     if (strcmp(command, "getpath") == 0) return GETPATH;
     if (strcmp(command, "setpath") == 0) return SETPATH;
     if (strcmp(command, "exit") == 0) return EXIT;
+    if (strcmp(command, "clearh") == 0)return CLEARH;
     return NONE;
 }
 
@@ -124,6 +125,14 @@ Command *load_history(int *history_index){
     free(tokens);
     fclose(historyptr);
     return history;
+}
+
+void clear_history(Command *history, int *history_index){
+    for(int i =0; i < MAX_HISTORY; i++){
+        strcpy(history[i].line,"");
+        history[i].number =0;
+    }
+    *history_index = 0;
 }
 
 void save_history(Command *history, int *history_index){
@@ -189,24 +198,26 @@ void print_history(Command *history, int history_index) {
 
 //a wee bit of spaghetti code. need to refactor
 
-char* get_command_from_history(char* input_buf, Command* history, int history_index) {
+char* get_command_from_history(char* input_buf, Command* history, int history_index, int *fromHistory) {
     char *ptr;
     int flag = 0;
     if (strcmp(input_buf, "!!\n") == 0) {
+        *fromHistory = 1;
         strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
     } else if (input_buf[0] == '!') {
+        *fromHistory = 1;
         int command_no;
         if (input_buf[1] == '-') {
-            command_no = (history_index - strtol(input_buf + 2, &ptr, 10)) % MAX_HISTORY;
+            command_no = history_index - strtol(input_buf + 2, &ptr, 10);
             if(command_no < 0)
                 command_no += MAX_HISTORY;
         } 
         else {
-            command_no = (history_index + strtol(input_buf + 1, &ptr, 10) -1) % MAX_HISTORY;
+            command_no = strtol(input_buf + 1, &ptr, 10) -1;
         }
-        printf("attempted command %i%s %i history index %d\n", command_no, history[command_no].line, history[command_no].number, history_index);
         if (command_no >= 0 && command_no <= MAX_HISTORY) {
-                strcpy(input_buf, history[command_no].line);
+            printf("attempted command %i%s %i history index %d\n", command_no, history[command_no].line, history[command_no].number, history_index);
+            strcpy(input_buf, history[command_no].line);
         } else {
             printf("Error: Invalid history invocation\n");
             // Set input_buf to an empty string to indicate an error
