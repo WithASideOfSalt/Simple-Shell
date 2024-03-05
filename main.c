@@ -111,14 +111,16 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
                                 //repeat equal to the number of tokens -z so that exactly the max index is used
                                 for(int y=1; y<((new_number_of_tokens)-z); y++){
                                     strcpy(new_tokens[z+y], tokens[y]);
-                                    strcat(new_tokens[z+y], "\0");
                                 }
                             }
                             //replacing tokens with new_tokens so that it may loop properly
-                            for(int x = 0; x < (new_number_of_tokens-1); x++){
-                                strcpy(tokens[x], new_tokens[x]);
-                                strcat(tokens[x], "\0");
-                            }
+                        }
+                        for(int x = 0; x < (new_number_of_tokens); x++){
+                            strcpy(tokens[x], new_tokens[x]);
+                        }
+                        printf("what is in tokens\n");
+                        for(int i =0; i < 2; i++){
+                            printf("%s\n",tokens[i]);
                         }
                         //repeating for all tokens except one as that one has been replaced by its alias
                         //replace with size is reduced by 1 so that it is the index rather than the number
