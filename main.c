@@ -71,7 +71,7 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
         // Create array of strings to store tokens
         char **tokens;
         // Allocate memory to the array of char pointers
-        tokens = malloc(sizeof(char**)*(4 * MAX_TOKENS));
+        tokens = malloc(sizeof(char**)* MAX_TOKENS);
         // Parse input into tokens
         int number_of_tokens = tokenize(input_buf, tokens); 
         // Make sure that there are tokens / commands to process
@@ -196,6 +196,7 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
         }
         //printf("Before Free\n");
         for (int i = 0; i < number_of_tokens; i++){
+            memset(tokens[i],0,strlen(tokens[i]));
             free(tokens[i]);
         }
         free(tokens);

@@ -165,7 +165,7 @@ void add_to_history(char **command, Command *history, int *history_index) {
     while (command[i] != NULL && strcmp(command[i], " ")) {
         strcat(temp, " ");
         strcat(temp, command[i]);
-        //printf("%s\n", temp);
+        printf("%s\n", temp);
         i++;
     }
     // Store the command in the history array
@@ -190,7 +190,7 @@ void print_history(Command *history, int history_index) {
     for (int i = 0; i < MAX_HISTORY; i++) {
         int index = (history_index + i) % MAX_HISTORY; 
         if (history[index].number != 0) { 
-            printf("%d %s %d\n", temp, history[index].line, history[index].number);
+            printf("%d %s\n", temp, history[index].line);
             temp++;
         }
     }
@@ -203,7 +203,15 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
     int flag = 0;
     if (strcmp(input_buf, "!!\n") == 0) {
         *fromHistory = 1;
-        strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
+        if(strcmp(history[(history_index-1)].line, "") == 0)
+        {
+            printf("Error: Invalid history invocation\n");
+            input_buf[0] = '\0';
+        }
+        else{
+            strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
+        }
+        
     } else if (input_buf[0] == '!') {
         *fromHistory = 1;
         int command_no;
