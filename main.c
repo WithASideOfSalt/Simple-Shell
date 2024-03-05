@@ -76,6 +76,9 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
         int number_of_tokens = tokenize(input_buf, tokens); 
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
+            if(fromHistory == 0){
+                add_to_history(tokens, history, &history_index);
+            }   
             char **new_tokens;
             int counter = 1;
             int continue_loop = 1;
@@ -124,6 +127,7 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
                         found_alias_this_loop = 1;
                     } 
                 }
+                printf("%s\n", *tokens);
                 //end loop if havent found an alias in the loop
                 if(found_alias_this_loop == 0){
                     continue_loop = 0;
@@ -138,10 +142,6 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
                 forky_fun(new_tokens[0], new_tokens+1, new_number_of_tokens);
             } 
             builtins command = get_enum(tokens[0]);
-            //add any attempted command into the history
-            if(fromHistory == 0){
-                add_to_history(tokens, history, &history_index);
-            }
             
             //check if command has already been found with aliases
             if(found_function == 0){
