@@ -499,7 +499,6 @@ char** ReplaceAliases(AliasList aliaslist, int* numtokens, char** tokens){
                         printf("after section: %s\n", afterSection[c]);
                         new_tokens[i+aliaslist.list[j].rplc_wth_size+c] = afterSection[c];
                     }
-
                     free(beforeSection);
                     free(afterSection);
 
