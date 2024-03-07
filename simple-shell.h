@@ -42,3 +42,5 @@ AliasList unalias(char* [], int, AliasList);
 AliasList create_alias(char* [], int, AliasList);
 void print_aliases();
 void clear_history(Command *, int*);
+char** ReplaceAliases(AliasList, int*, char**);
+char** subList(char **, int, int);

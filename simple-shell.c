@@ -365,12 +365,18 @@ int save_aliases(AliasList a_list){
 
 AliasList unalias(char* arguments[], int args_len, AliasList aliaslist){
     int found = 0;
+    if(args_len != 1){
+        printf("Error:incorrect usage of unalias command: Usage - unalias <alias>\n");
+        return aliaslist;
+    }
     for(int i=0;i<aliaslist.length;i++){
         //check if supplied alias is equal to any stored alias
         if(strcmp(aliaslist.list[i].to_replace, arguments[0]) == 0){
+            printf("found a match\n");
             found = 1;
             //attempting to free memory used for the list by overwriting all the removed entry with the subsequent entry and repeat for the remainder of the list
-            for(int z=i;z<(aliaslist.length-1);z++){
+            printf("list size = %d\n", aliaslist.length);
+            for(int z=i;z<(aliaslist.length);z++){
                 strcpy(aliaslist.list[z].to_replace, aliaslist.list[z+1].to_replace);
                 for(int y=0;y<(aliaslist.list[i].rplc_wth_size-1); y++){
                     strcpy(aliaslist.list[z].replace_with[y], aliaslist.list[z+1].replace_with[y]);
@@ -378,7 +384,7 @@ AliasList unalias(char* arguments[], int args_len, AliasList aliaslist){
                 aliaslist.list[z].rplc_wth_size = aliaslist.list[z+1].rplc_wth_size;
                 printf("%d, is the rplcwithsize of alias %s \n", aliaslist.list[z].rplc_wth_size, aliaslist.list[z].to_replace);
                 //setting the final entry to be empty so that it will be replaced by next added entry
-                if(z == ((aliaslist.length-1)-1)){
+                if(z == ((aliaslist.length-1))){
                     strcpy(aliaslist.list[z+1].to_replace, "");
                     for(int y=0;y<(aliaslist.list[z+1].rplc_wth_size-1); y++){
                         strcpy(aliaslist.list[z+1].replace_with[y], "");
@@ -403,7 +409,8 @@ AliasList create_alias(char* arguments[], int args_len, AliasList aliaslist){
         if(strcmp(aliaslist.list[i].to_replace, arguments[0]) == 0){
             printf("Error: creation of duplicate alias:%s replaced older alias \n", arguments[0]);
             //remove old alias
-            aliaslist = unalias(arguments, args_len, aliaslist);
+            printf("create alias args_len = %d\n", args_len);
+            aliaslist = unalias(arguments, 1, aliaslist);
         }
     }
     if(aliaslist.length < 10){
@@ -440,3 +447,94 @@ void print_aliases(AliasList aliaslist){
 
 }
 
+char** ReplaceAliases(AliasList aliaslist, int* numtokens, char** tokens){
+    char **new_tokens;
+    int newTokenNum = *numtokens;
+    int counter = 1;
+    int continue_loop = 1;
+    int reset = 0;
+    int foundFunction = 0;
+    //ensure there is space for up to three aliases deep of tokens
+    new_tokens = malloc(sizeof(char**) * (4 * (MAX_TOKENS)));
+    new_tokens = tokens;
+    //check for aliases in tokens[0] and alter them from aliases to the original command(s)
+    //it lasts until it has looped 3 times or it doesnt find an alias in the list 
+    while(counter < 5 && continue_loop == 1){
+        for(int i =0; i < newTokenNum ; i++){
+            for(int j =0; j< aliaslist.length; j++){
+                //find a matching alias
+                if(strcmp(aliaslist.list[j].to_replace, new_tokens[i]) == 0){
+                    printf("Going To Be replaced %s in position %d\n", new_tokens[i], i);
+                    //get every token before and after the replacement
+                    char** beforeSection = subList(new_tokens, 0, i);
+                    char** afterSection = subList(new_tokens, i+1, newTokenNum);
+                    char newSection[MAX_TOKENS][MAX_INPUT_LENGTH];
+                    for(int c =0; c< MAX_TOKENS; c++){
+                        for(int x = 0; x < MAX_INPUT_LENGTH; x++){
+                            newSection[c][x] = aliaslist.list[j].replace_with[c][x];
+                        }
+                    }
+                    //generate new token list
+                    for(int c =0; c< i; c++){
+                        new_tokens[c] = beforeSection[c];
+                        printf("before section: %s\n", beforeSection[c]);
+                    }
+                    for(int c = 0; c< aliaslist.list[j].rplc_wth_size; c++){
+                        new_tokens[i+c] = newSection[c];
+                        printf("new section: %s\n", newSection[c]);
+                        if(c >= 1){
+                            newTokenNum += 1;
+                        }
+                    }
+                    for(int c = 0; c< newTokenNum - i; c++){
+                        printf("after section: %s\n", afterSection[c]);
+                        new_tokens[i+aliaslist.list[j].rplc_wth_size+c] = afterSection[c];
+                    }
+
+                    free(beforeSection);
+                    free(afterSection);
+
+                    counter++;
+                    i = 0;
+                    j =0;
+                    reset = 1;
+                    foundFunction = 1;
+                    for(int c = 0; c< newTokenNum; c++){
+                        printf("current new token %s\n", new_tokens[c]);
+                    }
+                    break;
+                }
+            }
+            if(reset == 1){
+                break;
+            }
+        }
+        //printf("Gotten to the end with repalcement, reset = %d\n", reset);
+        if(reset == 0){
+            continue_loop = 0;
+        }
+        reset = 0;
+    }
+    if(counter > 4){
+        printf("The entered alias has attempted to loop 4 or more times which is past the limit please alter aliases \n");
+        return tokens;
+    }
+    if(foundFunction == 1){
+        *numtokens = newTokenNum;
+        return new_tokens;
+    }
+    else{
+        return tokens;
+    }
+}
+
+char** subList(char** list, int start, int end){
+    char** subList = malloc(sizeof(char**) * (4 * (MAX_TOKENS)));
+    int pos =0;
+    for(int i =start; i < end; i++){
+        //printf("HERE + %d\n", i);
+        subList[pos] = list[i];
+        pos++;
+    }
+    return subList;
+}
