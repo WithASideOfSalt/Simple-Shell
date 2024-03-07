@@ -201,7 +201,7 @@ void print_history(Command *history, int history_index) {
 char* get_command_from_history(char* input_buf, Command* history, int history_index, int *fromHistory) {
     char *ptr;
     int flag = 0;
-    if (strcmp(input_buf, "!!\n") == 0) {
+    if (strcmp(input_buf, "!!\n") == 0 || strcmp(input_buf, "!!") == 0) {
         *fromHistory = 1;
         if(strcmp(history[(history_index-1)].line, "") == 0)
         {
@@ -235,6 +235,15 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
         if(input_buf[0] == '\0' && flag != 1){
             printf("Error: Invalid history invocation\n");
         }
+    }
+    if(input_buf[0] == ' '){
+        int c =0;
+        while(input_buf[c + 1] != '\0'){
+            printf("%d %c\n", c, input_buf[c]);
+            input_buf[c] = input_buf[c + 1];
+            c++;
+        }
+        input_buf[c] = '\0';
     }
     return input_buf;
 }

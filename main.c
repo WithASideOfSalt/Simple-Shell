@@ -67,24 +67,26 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
         int fromHistory = 0;
         // Check if the input is a history invocation
         strcpy(input_buf,get_command_from_history(input_buf, history, history_index, &fromHistory));
-        
         // Create array of strings to store tokens
         char **tokens;
         // Allocate memory to the array of char pointers
         tokens = malloc(sizeof(char**)* MAX_TOKENS);
         // Parse input into tokens
         int number_of_tokens = tokenize(input_buf, tokens);  
-
-        if(fromHistory == 0){
-            add_to_history(tokens, history, &history_index);
-        }  
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
-
+            if(fromHistory == 0){
+                add_to_history(tokens, history, &history_index);
+            }  
             printf("HERE\n");
             builtins command = get_enum(tokens[0]);
             if(command != ALIAS && command != UNALIAS){
                 tokens = ReplaceAliases(aliaslist, &number_of_tokens, tokens);
+                printf("Current command = %d Current first token = %s\n", command, tokens[0]);
+                get_command_from_history(tokens[0], history, history_index-1, &fromHistory);
+                printf("Current command = %d Current first token = %s\n", command, tokens[0]);
+                command = get_enum(tokens[0]);
+                printf("Current command = %d Current first token = %s\n", command, tokens[0]);
             }
             
             //check if command has already been found with aliases
