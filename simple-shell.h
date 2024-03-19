@@ -4,6 +4,8 @@
 #define MAX_INPUT_LENGTH 512
 #define MAX_TOKENS 50
 #define MAX_HISTORY 20
+#define MAX_ALIASES 3
+
 
 typedef enum builtins {CD, HISTORY, ALIAS, UNALIAS, GETPATH, SETPATH, EXIT, CLEARH, NONE} builtins;
 
@@ -11,7 +13,6 @@ typedef struct Command {
     int number;
     char line[MAX_INPUT_LENGTH];
 } Command;
-#define MAX_ALIASES 10
 
 typedef struct Alias{
     char to_replace[MAX_INPUT_LENGTH];

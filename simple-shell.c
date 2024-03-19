@@ -165,7 +165,6 @@ void add_to_history(char **command, Command *history, int *history_index) {
     while (command[i] != NULL && strcmp(command[i], " ")) {
         strcat(temp, " ");
         strcat(temp, command[i]);
-        printf("%s\n", temp);
         i++;
     }
     // Store the command in the history array
@@ -190,7 +189,7 @@ void print_history(Command *history, int history_index) {
     for (int i = 0; i < MAX_HISTORY; i++) {
         int index = (history_index + i) % MAX_HISTORY; 
         if (history[index].number != 0) { 
-            printf("%d %s\n", temp, history[index].line);
+            printf("%d %s %d\n", temp, history[index].line, history[index].number);
             temp++;
         }
     }
@@ -222,9 +221,9 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
         } 
         else {
             command_no = strtol(input_buf + 1, &ptr, 10) -1;
+            printf("command number = %d\n", command_no);
         }
         if (command_no >= 0 && command_no <= MAX_HISTORY) {
-            printf("attempted command %i%s %i history index %d\n", command_no, history[command_no].line, history[command_no].number, history_index);
             strcpy(input_buf, history[command_no].line);
         } else {
             printf("Error: Invalid history invocation\n");
@@ -239,7 +238,6 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
     if(input_buf[0] == ' '){
         int c =0;
         while(input_buf[c + 1] != '\0'){
-            printf("%d %c\n", c, input_buf[c]);
             input_buf[c] = input_buf[c + 1];
             c++;
         }
@@ -247,9 +245,6 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
     }
     return input_buf;
 }
-
-
-
 
 int get_env(char **tokens, int number_of_tokens) {
     if (number_of_tokens != 1) {
@@ -386,15 +381,21 @@ AliasList unalias(char* arguments[], int args_len, AliasList aliaslist){
             //attempting to free memory used for the list by overwriting all the removed entry with the subsequent entry and repeat for the remainder of the list
             printf("list size = %d\n", aliaslist.length);
             for(int z=i;z<(aliaslist.length);z++){
+                printf("counter = %d\n", z);
+                printf("list size = %d\n", aliaslist.length);
+                print_aliases(aliaslist);
                 strcpy(aliaslist.list[z].to_replace, aliaslist.list[z+1].to_replace);
-                for(int y=0;y<(aliaslist.list[i].rplc_wth_size-1); y++){
+                for(int y=0;y<(aliaslist.list[i].rplc_wth_size); y++){
                     strcpy(aliaslist.list[z].replace_with[y], aliaslist.list[z+1].replace_with[y]);
                 }
                 aliaslist.list[z].rplc_wth_size = aliaslist.list[z+1].rplc_wth_size;
                 printf("%d, is the rplcwithsize of alias %s \n", aliaslist.list[z].rplc_wth_size, aliaslist.list[z].to_replace);
                 //setting the final entry to be empty so that it will be replaced by next added entry
                 if(z == ((aliaslist.length-1))){
-                    strcpy(aliaslist.list[z+1].to_replace, "");
+                    printf("length before = %d\n", aliaslist.length);
+                    strcpy(aliaslist.list[z].to_replace, "");
+                    printf("length before = %d\n", aliaslist.length);
+
                     for(int y=0;y<(aliaslist.list[z+1].rplc_wth_size-1); y++){
                         strcpy(aliaslist.list[z+1].replace_with[y], "");
                     }
@@ -403,6 +404,7 @@ AliasList unalias(char* arguments[], int args_len, AliasList aliaslist){
                     aliaslist.length = (aliaslist.length-1);
                 }
             }
+            printf("%d\n", aliaslist.length);
             return aliaslist;
         }
     }
@@ -422,7 +424,7 @@ AliasList create_alias(char* arguments[], int args_len, AliasList aliaslist){
             aliaslist = unalias(arguments, 1, aliaslist);
         }
     }
-    if(aliaslist.length < 10){
+    if(aliaslist.length < MAX_ALIASES){
         //create new instance of struct
         Alias newalias;
         //populate struct
@@ -473,7 +475,6 @@ char** ReplaceAliases(AliasList aliaslist, int* numtokens, char** tokens){
             for(int j =0; j< aliaslist.length; j++){
                 //find a matching alias
                 if(strcmp(aliaslist.list[j].to_replace, new_tokens[i]) == 0){
-                    printf("Going To Be replaced %s in position %d\n", new_tokens[i], i);
                     //get every token before and after the replacement
                     char** beforeSection = subList(new_tokens, 0, i);
                     char** afterSection = subList(new_tokens, i+1, newTokenNum);
@@ -486,17 +487,14 @@ char** ReplaceAliases(AliasList aliaslist, int* numtokens, char** tokens){
                     //generate new token list
                     for(int c =0; c< i; c++){
                         new_tokens[c] = beforeSection[c];
-                        printf("before section: %s\n", beforeSection[c]);
                     }
                     for(int c = 0; c< aliaslist.list[j].rplc_wth_size; c++){
                         new_tokens[i+c] = newSection[c];
-                        printf("new section: %s\n", newSection[c]);
                         if(c >= 1){
                             newTokenNum += 1;
                         }
                     }
                     for(int c = 0; c< newTokenNum - i; c++){
-                        printf("after section: %s\n", afterSection[c]);
                         new_tokens[i+aliaslist.list[j].rplc_wth_size+c] = afterSection[c];
                     }
 
@@ -508,9 +506,6 @@ char** ReplaceAliases(AliasList aliaslist, int* numtokens, char** tokens){
                     j =0;
                     reset = 1;
                     foundFunction = 1;
-                    for(int c = 0; c< newTokenNum; c++){
-                        printf("current new token %s\n", new_tokens[c]);
-                    }
                     break;
                 }
             }
@@ -541,7 +536,6 @@ char** subList(char** list, int start, int end){
     char** subList = malloc(sizeof(char**) * (4 * (MAX_TOKENS)));
     int pos =0;
     for(int i =start; i < end; i++){
-        //printf("HERE + %d\n", i);
         subList[pos] = list[i];
         pos++;
     }

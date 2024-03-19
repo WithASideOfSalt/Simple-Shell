@@ -45,7 +45,7 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
 
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
-    int history_index = 0;
+    int history_index = -1;
     Command* history = malloc(sizeof(Command) * MAX_HISTORY);    
     //Load history here
     history = load_history(&history_index);
@@ -78,15 +78,11 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
             if(fromHistory == 0){
                 add_to_history(tokens, history, &history_index);
             }  
-            printf("HERE\n");
             builtins command = get_enum(tokens[0]);
             if(command != ALIAS && command != UNALIAS){
                 tokens = ReplaceAliases(aliaslist, &number_of_tokens, tokens);
-                printf("Current command = %d Current first token = %s\n", command, tokens[0]);
                 get_command_from_history(tokens[0], history, history_index-1, &fromHistory);
-                printf("Current command = %d Current first token = %s\n", command, tokens[0]);
                 command = get_enum(tokens[0]);
-                printf("Current command = %d Current first token = %s\n", command, tokens[0]);
             }
             
             //check if command has already been found with aliases
@@ -101,7 +97,7 @@ if (getcwd(cwd, sizeof(cwd)) != NULL) {
                     break;
                 case HISTORY:
                     if(number_of_tokens > 1){
-                        printf("Error: incorrect usage of history. Usage: history");
+                        printf("Error: incorrect usage of history. Usage: history\n");
                     }else{
                         print_history(history, history_index);  
                     }  
