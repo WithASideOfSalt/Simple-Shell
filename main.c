@@ -18,29 +18,26 @@ int main(void){
     // Save the original PATH when your shell starts up.
 
     if (getenv("PATH") != NULL) {
-    strcpy(cwd, getenv("PATH"));
-} else {
-   printf("Error: PATH not found in the environment.\n");
-  
-}
-
-char *home_directory = getenv("HOME");
-if (home_directory != NULL) {
-    if (chdir(home_directory) != 0) {
-        perror("chdir() error");
-       
+        strcpy(cwd, getenv("PATH"));
+    } else {
+        printf("Error: PATH not found in the environment.\n");
     }
-} else {
-    printf("Error: HOME not found in the environment.\n");
-    
-}
-// Print the current working directory after changing
-if (getcwd(cwd, sizeof(cwd)) != NULL) {
-    printf("Current working dir: %s\n", cwd);
-} else {
-    perror("getcwd() error");
 
-}
+    char *home_directory = getenv("HOME");
+    if (home_directory != NULL) {
+        if (chdir(home_directory) != 0) {
+            perror("chdir() error");
+        }
+    } else {
+        printf("Error: HOME not found in the environment.\n");
+        
+    }
+    // Print the current working directory after changing
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        printf("Current working dir: %s\n", cwd);
+    } else {
+        perror("getcwd() error");
+    }
     
 
     char input_buf[MAX_INPUT_LENGTH];
