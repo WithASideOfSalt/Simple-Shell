@@ -220,7 +220,7 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
                 command_no += MAX_HISTORY;
         } 
         else {
-            command_no = strtol(input_buf + 1, &ptr, 10) -1;
+            command_no = (history_index + strtol(input_buf + 1, &ptr, 10) - 1) % 20;
             printf("command number = %d\n", command_no);
         }
         if (command_no >= 0 && command_no <= MAX_HISTORY) {
