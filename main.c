@@ -111,7 +111,6 @@ int main(void){
                     }
                     break;
                 case UNALIAS:
-                    printf("unalias\n");
                         aliaslist = unalias(tokens+1, number_of_tokens-1, aliaslist);
                     break;
                 case GETPATH:
@@ -128,7 +127,6 @@ int main(void){
                     break;
                 default:
                     forky_fun(tokens[0], tokens+1, number_of_tokens-1);
-                    //printf("DEFAULT\n");
                     break;
             }
             

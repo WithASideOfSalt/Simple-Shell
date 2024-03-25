@@ -361,25 +361,18 @@ AliasList unalias(char* arguments[], int args_len, AliasList aliaslist){
     for(int i=0;i<aliaslist.length;i++){
         //check if supplied alias is equal to any stored alias
         if(strcmp(aliaslist.list[i].to_replace, arguments[0]) == 0){
-            printf("found a match\n");
             found = 1;
             //attempting to free memory used for the list by overwriting all the removed entry with the subsequent entry and repeat for the remainder of the list
-            printf("list size = %d\n", aliaslist.length);
             for(int z=i;z<(aliaslist.length);z++){
-                printf("counter = %d\n", z);
-                printf("list size = %d\n", aliaslist.length);
                 print_aliases(aliaslist);
                 strcpy(aliaslist.list[z].to_replace, aliaslist.list[z+1].to_replace);
                 for(int y=0;y<(aliaslist.list[i].rplc_wth_size); y++){
                     strcpy(aliaslist.list[z].replace_with[y], aliaslist.list[z+1].replace_with[y]);
                 }
                 aliaslist.list[z].rplc_wth_size = aliaslist.list[z+1].rplc_wth_size;
-                printf("%d, is the rplcwithsize of alias %s \n", aliaslist.list[z].rplc_wth_size, aliaslist.list[z].to_replace);
                 //setting the final entry to be empty so that it will be replaced by next added entry
                 if(z == ((aliaslist.length-1))){
-                    printf("length before = %d\n", aliaslist.length);
                     strcpy(aliaslist.list[z].to_replace, "");
-                    printf("length before = %d\n", aliaslist.length);
 
                     for(int y=0;y<(aliaslist.list[z+1].rplc_wth_size-1); y++){
                         strcpy(aliaslist.list[z+1].replace_with[y], "");
