@@ -41,8 +41,9 @@ int main(void){
 
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
-    int history_index = -1;
-    Command* history = malloc(sizeof(Command) * MAX_HISTORY);    
+    //int history_index = 0;
+    //Command* history = malloc(sizeof(Command) * MAX_HISTORY);    
+    History history = load_history();
     //Load history here
     history = load_history(&history_index);
     AliasList aliaslist = read_aliases();

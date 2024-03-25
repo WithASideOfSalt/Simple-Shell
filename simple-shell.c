@@ -97,10 +97,10 @@ builtins get_enum (char * command) {
     return NONE;
 }
 
-Command *load_history(int *history_index){
+History load_history(){
     
     FILE *historyptr;
-    Command *history = malloc(sizeof(Command) * MAX_HISTORY);
+    History history;
     historyptr = fopen(".hist_list", "r");
     char *nextLine = malloc(sizeof(char) * 512);
     char **tokens = malloc(sizeof(char**)*MAX_TOKENS);
@@ -113,7 +113,7 @@ Command *load_history(int *history_index){
         //nextLine[strcspn(nextLine, "\n")] = 0;
         nextLine[strlen(nextLine) -1] = '\0';
         number_of_tokens = tokenize(nextLine, tokens);
-        add_to_history(tokens, history, history_index);
+        add_to_history(tokens, history);
         for (int i = 0; i < number_of_tokens; i++){
             memset(tokens[i], 0, strlen(tokens[i]));
         }
@@ -198,6 +198,7 @@ void print_history(Command *history, int history_index) {
 
 char* get_command_from_history(char* input_buf, Command* history, int history_index, int *fromHistory) {
     char *ptr;
+    printf("history index is = %d\n", history_index);
     if (strcmp(input_buf, "!!\n") == 0 || strcmp(input_buf, "!!") == 0) {
         *fromHistory = 1;
         if(history_index == 0 || strcmp(history[(history_index-1) % MAX_HISTORY].line, "") == 0) {
@@ -215,11 +216,11 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
             if(command_no < 0)
                 command_no += MAX_HISTORY;
         } else {
-            command_no = ((strtol(input_buf + 1, &ptr, 10) - 1) + history_index) % MAX_HISTORY;
+            command_no = ((strtol(input_buf + 1, &ptr, 10) -1) + history_index) % MAX_HISTORY;
         }
         printf("command number = %d\n", command_no);
         if (command_no >= 0 && command_no < MAX_HISTORY) {
-            strcpy(input_buf, history[command_no % MAX_HISTORY].line);
+            strcpy(input_buf, history[command_no].line);
         } else {
             printf("Error: Invalid history invocation\n");
             input_buf[0] = '\0';

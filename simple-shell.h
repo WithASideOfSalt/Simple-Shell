@@ -14,6 +14,12 @@ typedef struct Command {
     char line[MAX_INPUT_LENGTH];
 } Command;
 
+typedef struct History{
+    Command commands[MAX_HISTORY];
+    int history_index;
+    int maxReached;
+}History;
+
 typedef struct Alias{
     char to_replace[MAX_INPUT_LENGTH];
     char replace_with[MAX_TOKENS][MAX_INPUT_LENGTH];
@@ -30,7 +36,7 @@ builtins get_enum (char *);
 int forky_fun(char *, char* [], int);
 void add_to_history(char **, Command *, int *);
 void print_history(Command *, int);
-Command *load_history(int *);
+History load_history();
 void save_history(Command *, int *);
 char* get_command_from_history(char *, Command *, int, int*);
 int get_env(char **tokens, int number_of_tokens);
