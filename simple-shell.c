@@ -330,7 +330,6 @@ AliasList read_aliases(){
         i++;
    }
    aliases.length = i;
-   printf("Imported %d saved aliases \n", aliases.length);
    fclose(alias_file);
    return aliases;
 }
@@ -382,7 +381,6 @@ AliasList unalias(char* arguments[], int args_len, AliasList aliaslist){
                     aliaslist.length = (aliaslist.length-1);
                 }
             }
-            printf("%d\n", aliaslist.length);
             return aliaslist;
         }
     }
