@@ -200,9 +200,9 @@ void print_history(HistoryList history) {
 char* invoke_history(char* input_buf, HistoryList history, int *changed, int *fromHistory){
     char *ptr;
     char* new_buf= malloc(MAX_INPUT_LENGTH*sizeof(char));
-    if (input_buf[1] == "!"){
+    if (input_buf[1] == '!'){
         strcpy(new_buf, history.command(history.index));
-    } else if (input_buf[1] == "-"){
+    } else if (input_buf[1] == '-'){
         int com = strtol(input_buf + 2, &ptr, 10);
         if (com > 0 && com <= 20){
             strcpy(new_buf, history.command[(history.index - com -1)%MAX_HISTORY]);

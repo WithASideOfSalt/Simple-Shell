@@ -77,7 +77,7 @@ int main(void){
             while (changed == 1){
                 changed = 0;
                 // Check for history invokations
-                if (input_buf[0] == "!"){
+                if (input_buf[0] == '!'){
                     // History
                     strcpy(input_buf, invoke_history(input_buf, history, &changed, &fromHistory));
                     // Empty tokens
