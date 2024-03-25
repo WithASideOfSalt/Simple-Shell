@@ -216,19 +216,22 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
                 input_buf[0] = '\0';
             } else {
                 command_no = history_index - strtol(input_buf + 2, &ptr, 10);
+                if (command_no < 0) {
+                    command_no += MAX_HISTORY;
+                }
+                strcpy(input_buf, history[command_no % MAX_HISTORY].line);
             }
-            if(command_no < 0) {
-                command_no += MAX_HISTORY;
-            }
+            
         } else {
             if (strtol(input_buf + 1, &ptr, 10) > 20 || strtol(input_buf + 1, &ptr, 10) < 1) {
                 printf("Error: Invalid history invocation c\n");
                 input_buf[0] = '\0';
             } else {
                 command_no = (strtol(input_buf + 1, &ptr, 10) + history_index -1) % MAX_HISTORY;
+                strcpy(input_buf, history[command_no % MAX_HISTORY].line);
             }
         }
-        strcpy(input_buf, history[command_no % MAX_HISTORY].line);
+        
     }
     if(input_buf[0] == ' '){
         memmove(input_buf, input_buf + 1, strlen(input_buf));
