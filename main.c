@@ -143,7 +143,7 @@ int main(void){
                     looping = 0;
                     break;
                 case CLEARH:
-                    clear_history(history);
+                    history = clear_history(history);
                     break;
                 default:
                     forky_fun(tokens[0], tokens+1, number_of_tokens-1);
