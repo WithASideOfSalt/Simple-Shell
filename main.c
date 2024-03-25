@@ -34,7 +34,6 @@ int main(void){
     }
     // Print the current working directory after changing
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        printf("Current working dir: %s\n", cwd);
     } else {
         perror("getcwd() error");
     }
