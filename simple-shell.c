@@ -197,27 +197,28 @@ void print_history(HistoryList history) {
     }
 }
 
-void invoke_history(char** input_buf, HistoryList history, int *changed, int *fromHistory){
+char* invoke_history(char* input_buf, HistoryList history, int *changed, int *fromHistory){
     char *ptr;
-    if (*input_buf[1] == "!"){
-        strcpy(*input_buf, history.command(history.index));
-    } else if (*input_buf[1] == "-"){
-        int com = strtol(*input_buf + 2, &ptr, 10);
+    char new_buf[MAX_INPUT_LENGTH];
+    if (input_buf[1] == "!"){
+        strcpy(new_buf, history.command(history.index));
+    } else if (input_buf[1] == "-"){
+        int com = strtol(input_buf + 2, &ptr, 10);
         if (com > 0 && com <= 20){
-            strcpy(*input_buf, history.command[(history.index - com -1)%MAX_HISTORY]);
+            strcpy(new_buf, history.command[(history.index - com -1)%MAX_HISTORY]);
             *changed = 1;
             *fromHistory = 1;
         } else {
             printf("Failed in invoke history!\n");
         }
     } else {
-        int com = strtol(*input_buf + 4, &ptr, 10);
+        int com = strtol(input_buf + 4, &ptr, 10);
         if (com > 0 && com <= 20){
             int index = history.index + 1;
             while (strcmp(history.command[index]), "" == 0){
                 index ++;
             }
-            strcpy(*input_buf, history.command[(index + com + 1)%MAX_HISTORY]);
+            strcpy(new_buf, history.command[(index + com + 1)%MAX_HISTORY]);
             *changed = 1;
             *fromHistory = 1;
         } else {
