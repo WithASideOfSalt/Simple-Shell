@@ -113,6 +113,7 @@ HistoryList read_history(){
       history.index = -1;
       return history;
    }
+   printf("A");
    int i = 0;
    while(fgets(buf, 512, history_file) != NULL) {
         char *token;
