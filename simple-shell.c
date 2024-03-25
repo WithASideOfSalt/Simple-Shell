@@ -148,7 +148,7 @@ void save_history(HistoryList history){
     for(int i = 0; i<MAX_HISTORY; i++){
         if(strcmp(history.command[x],"") != 0){
             printf("%s\n", history.command[x]);
-            fprintf(history_file, "%s\n", history.command[history.index]);
+            fprintf(history_file, "%s\n", history.command[x]);
         }
         x = (x + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
     }
