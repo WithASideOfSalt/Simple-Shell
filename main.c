@@ -79,7 +79,7 @@ int main(void){
                 // Check for history invokations
                 if (input_buf[0] == "!"){
                     // History
-                    invoke_history(&input_buf, history, &changed, &fromHistory);
+                    input_buf = invoke_history(input_buf, history, &changed, &fromHistory);
                     // Empty tokens
                     for (int i = 0; i < number_of_tokens; i++){
                         free(tokens[i]);
