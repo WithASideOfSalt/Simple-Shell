@@ -189,7 +189,7 @@ void print_history(HistoryList history) {
     int temp = 1;
     for (int i = 0; i < MAX_HISTORY; i++) {
         int index = (i + history.index + 1) % MAX_HISTORY; 
-        if (strcmp(history.command[index], "") == 0) { 
+        if (strcmp(history.command[index], "") != 0) { 
             printf("%d %s %d\n", temp, history.command[index], index);
             temp++;
         }
