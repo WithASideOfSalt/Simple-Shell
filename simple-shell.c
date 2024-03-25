@@ -211,7 +211,7 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
         *fromHistory = 1;
         int command_no;
         if (input_buf[1] == '-') {
-            command_no = history_index - strtol(input_buf + 2, &ptr, 10) + 1;
+            command_no = history_index - strtol(input_buf + 2, &ptr, 10);
             if(command_no < 0)
                 command_no += MAX_HISTORY;
         } else {
