@@ -110,7 +110,7 @@ HistoryList read_history(){
     history_file = fopen(".hist_list" , "r");
     if(history_file == NULL) {
       perror("Error opening history file");
-      HistoryList.index = -1;
+      history.index = -1;
       return history;
    }
    int i = 0;
@@ -119,7 +119,7 @@ HistoryList read_history(){
         token = strtok(NULL, DELIMITERS);
         int x = 0;
         while (token != NULL){
-            strcpy(history.command[i][x], token);
+            strcat(history.command[i], token);
             token = strtok(NULL, DELIMITERS);
             x++;
         }
@@ -171,7 +171,7 @@ void add_to_history(char **command, HistoryList *history) {
         i++;
     }
     // Store the command in the history array
-    strcpy(history->command[(history.index + 1) % MAX_HISTORY], temp);
+    strcpy(history->command[(history->index + 1) % MAX_HISTORY], temp);
     strcpy(temp, " ");
     // Update the history index and wrap around when reaching MAX_HISTORY
     history->index = (history->index + 1) % MAX_HISTORY;
@@ -197,7 +197,7 @@ void print_history(HistoryList history) {
     }
 }
 
-void invoke_history(char* input_buf, HistoryList history, int *changed, int *fromHistory){
+void invoke_history(char** input_buf, HistoryList history, int *changed, int *fromHistory){
     char *ptr;
     if (*input_buf[1] == "!"){
         strcpy(*input_buf, history.command(history.index));
