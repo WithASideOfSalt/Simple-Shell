@@ -215,7 +215,7 @@ char* invoke_history(char* input_buf, HistoryList history, int *changed, int *fr
     } else {
         int com = strtol(input_buf + 1, &ptr, 10);
         if (com > 0 && com <= 20){
-            int index = (i + history.index + 1) % MAX_HISTORY; 
+            int index = (history.index + 1) % MAX_HISTORY; 
             while (strcmp(history.command[index], "") != 0){
                 index ++;
             }
