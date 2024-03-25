@@ -215,17 +215,8 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
             if(command_no < 0)
                 command_no += MAX_HISTORY;
         } else {
-            int temp = 1;
-            for (int i = 0; i < MAX_HISTORY; i++) {
-                int index = (history_index + i) % MAX_HISTORY; 
-                if (history[index].number != 0) { 
-                    if (temp == strtol(input_buf + 1, &ptr, 10)){
-                        command_no = temp;
-                    }
-                    temp++;
-                }
-            }
-            //command_no = (strtol(input_buf + 1, &ptr, 10) + history_index - 2) % MAX_HISTORY; //
+            
+            command_no = (strtol(input_buf + 1, &ptr, 10) + history_index) % MAX_HISTORY; //
         }
         if (command_no >= 0) {
             strcpy(input_buf, history[command_no % MAX_HISTORY].line);
