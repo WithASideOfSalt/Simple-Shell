@@ -189,7 +189,7 @@ void print_history(Command *history, int history_index) {
     for (int i = 0; i < MAX_HISTORY; i++) {
         int index = (history_index + i) % MAX_HISTORY; 
         if (history[index].number != 0) { 
-            printf("%d %s %d\n", temp, history[index].line, history[index].number);
+            printf("%d %s %d\n", temp, history[index].line, index);
             temp++;
         }
     }
@@ -197,6 +197,7 @@ void print_history(Command *history, int history_index) {
 
 
 char* get_command_from_history(char* input_buf, Command* history, int history_index, int *fromHistory) {
+    printf("History index %d", history_index);
     char *ptr;
     if (strcmp(input_buf, "!!\n") == 0 || strcmp(input_buf, "!!") == 0) {
         *fromHistory = 1;
