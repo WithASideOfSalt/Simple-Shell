@@ -197,7 +197,7 @@ void print_history(Command *history, int history_index) {
 
 
 char* get_command_from_history(char* input_buf, Command* history, int history_index, int *fromHistory) {
-    printf("History index %d", history_index);
+    printf("History index %d\n", history_index);
     char *ptr;
     if (strcmp(input_buf, "!!\n") == 0 || strcmp(input_buf, "!!") == 0) {
         *fromHistory = 1;
