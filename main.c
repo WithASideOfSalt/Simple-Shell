@@ -43,7 +43,9 @@ int main(void){
     }
 
     // Load history
+    printf("Loading history\n");
     HistoryList history = read_history();
+    printf("Loading aliases\n");
     AliasList aliaslist = read_aliases();
 
     // Do while shell has not terminated
