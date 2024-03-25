@@ -213,7 +213,7 @@ char* invoke_history(char* input_buf, HistoryList history, int *changed, int *fr
             return input_buf;
         }
     } else {
-        int com = strtol(input_buf + 4, &ptr, 10);
+        int com = strtol(input_buf + 1, &ptr, 10);
         if (com > 0 && com <= 20){
             int index = history.index + 1;
             while (strcmp(history.command[index], "") == 0){
