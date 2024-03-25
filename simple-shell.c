@@ -195,22 +195,17 @@ void print_history(Command *history, int history_index) {
     }
 }
 
-//a wee bit of spaghetti code. need to refactor
 
 char* get_command_from_history(char* input_buf, Command* history, int history_index, int *fromHistory) {
     char *ptr;
-    int flag = 0;
     if (strcmp(input_buf, "!!\n") == 0 || strcmp(input_buf, "!!") == 0) {
         *fromHistory = 1;
-        if(strcmp(history[(history_index-1)].line, "") == 0)
-        {
+        if(history_index == 0 || strcmp(history[(history_index-1) % MAX_HISTORY].line, "") == 0) {
             printf("Error: Invalid history invocation\n");
             input_buf[0] = '\0';
-        }
-        else{
+        } else {
             strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
         }
-        
     } else if (input_buf[0] == '!') {
         *fromHistory = 1;
         int command_no;
@@ -218,30 +213,18 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
             command_no = history_index - strtol(input_buf + 2, &ptr, 10);
             if(command_no < 0)
                 command_no += MAX_HISTORY;
-        } 
-        else {
-            command_no = (history_index + strtol(input_buf + 1, &ptr, 10) - 1) % 20;
-            printf("command number = %d\n", command_no);
+        } else {
+            command_no = (strtol(input_buf + 1, &ptr, 10) - 1) % MAX_HISTORY;
         }
-        if (command_no >= 0 && command_no <= MAX_HISTORY) {
-            strcpy(input_buf, history[command_no].line);
+        if (command_no >= 0 && command_no < history_index) {
+            strcpy(input_buf, history[command_no % MAX_HISTORY].line);
         } else {
             printf("Error: Invalid history invocation\n");
-            // Set input_buf to an empty string to indicate an error
-            flag = 1;
             input_buf[0] = '\0';
-        }
-        if(input_buf[0] == '\0' && flag != 1){
-            printf("Error: Invalid history invocation\n");
         }
     }
     if(input_buf[0] == ' '){
-        int c =0;
-        while(input_buf[c + 1] != '\0'){
-            input_buf[c] = input_buf[c + 1];
-            c++;
-        }
-        input_buf[c] = '\0';
+        memmove(input_buf, input_buf + 1, strlen(input_buf));
     }
     return input_buf;
 }
