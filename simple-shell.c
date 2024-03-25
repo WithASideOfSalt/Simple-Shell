@@ -168,7 +168,7 @@ void add_to_history(char **command, Command *history, int *history_index) {
         i++;
     }
     // Store the command in the history array
-    strcpy(history[(*history_index) % MAX_HISTORY].line, temp);
+    strcpy(history[((*history_index)+1) % MAX_HISTORY].line, temp);
     strcpy(temp, " ");
     history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 
     // Update the history index and wrap around when reaching MAX_HISTORY
