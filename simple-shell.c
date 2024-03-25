@@ -147,7 +147,8 @@ void save_history(HistoryList history){
     int x = (history.index + 1) % MAX_HISTORY;
     for(int i = 0; i<MAX_HISTORY; i++){
         if(strcmp(history.command[x],"") == 0){
-            fprintf(history_file, "%s\n" ,history.command[history.index]);
+            printf("%s\n", history.command[history.index]);
+            fprintf(history_file, "%s\n", history.command[history.index]);
         }
         x = (x + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
     }
@@ -164,7 +165,7 @@ void add_to_history(char **command, HistoryList *history) {
     // Concatenate the command arguments into a single string
     char temp[MAX_INPUT_LENGTH] = "";
     int i = 0;
-    while (command[i] != NULL && strcmp(command[i], " ")) {
+    while (command[i] != NULL && strcmp(command[i], " ") != 0) {
         strcat(temp, " ");
         strcat(temp, command[i]);
         i++;
