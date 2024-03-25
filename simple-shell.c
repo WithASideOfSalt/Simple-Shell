@@ -199,7 +199,7 @@ void print_history(HistoryList history) {
 
 char* invoke_history(char* input_buf, HistoryList history, int *changed, int *fromHistory){
     char *ptr;
-    char new_buf= malloc(MAX_INPUT_LENGTH*sizeof(char));
+    char* new_buf= malloc(MAX_INPUT_LENGTH*sizeof(char));
     if (input_buf[1] == "!"){
         strcpy(new_buf, history.command(history.index));
     } else if (input_buf[1] == "-"){
