@@ -219,7 +219,7 @@ char* invoke_history(char* input_buf, HistoryList history, int *changed, int *fr
             while (strcmp(history.command[index], "") != 0){
                 index ++;
             }
-            strcpy(new_buf, history.command[(index + com)%MAX_HISTORY]);
+            strcpy(new_buf, history.command[(index + com + 1)%MAX_HISTORY]);
             *changed = 1;
             *fromHistory = 1;
         } else {
