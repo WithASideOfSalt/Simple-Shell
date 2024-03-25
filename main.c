@@ -45,7 +45,6 @@ int main(void){
     //Command* history = malloc(sizeof(Command) * MAX_HISTORY);    
     History history = load_history();
     //Load history here
-    history = load_history(&history_index);
     AliasList aliaslist = read_aliases();
     //Main loop
     while (looping){
@@ -63,7 +62,7 @@ int main(void){
 
         int fromHistory = 0;
         // Check if the input is a history invocation
-        strcpy(input_buf,get_command_from_history(input_buf, history, history_index, &fromHistory));
+        strcpy(input_buf,get_command_from_history(input_buf, history, &fromHistory));
         // Create array of strings to store tokens
         char **tokens;
         // Allocate memory to the array of char pointers
@@ -73,12 +72,12 @@ int main(void){
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
             if(fromHistory == 0){
-                add_to_history(tokens, history, &history_index);
+                history = add_to_history(tokens, history);
             }  
             builtins command = get_enum(tokens[0]);
             if(command != ALIAS && command != UNALIAS){
                 tokens = ReplaceAliases(aliaslist, &number_of_tokens, tokens);
-                get_command_from_history(tokens[0], history, history_index-1, &fromHistory);
+                get_command_from_history(tokens[0], history, &fromHistory);
                 command = get_enum(tokens[0]);
             }
             
@@ -96,7 +95,7 @@ int main(void){
                     if(number_of_tokens > 1){
                         printf("Error: incorrect usage of history. Usage: history\n");
                     }else{
-                        print_history(history, history_index);  
+                        print_history(history);  
                     }  
                     break;
                 case ALIAS:
@@ -123,7 +122,7 @@ int main(void){
                     looping = 0;
                     break;
                 case CLEARH:
-                    clear_history(history, &history_index);
+                    history = clear_history(history);
                     break;
                 default:
                     forky_fun(tokens[0], tokens+1, number_of_tokens-1);
@@ -143,7 +142,7 @@ int main(void){
     // Restore original path before exiting and directory
     restore_original_path(cwd);
     chdir(home_directory);
-    save_history(history, &history_index);
+    save_history(history);
     save_aliases(aliaslist);
     return 0;
 }

@@ -98,9 +98,10 @@ builtins get_enum (char * command) {
 }
 
 History load_history(){
-    
     FILE *historyptr;
     History history;
+    history.history_index =0;
+    history.maxReached = 0;
     historyptr = fopen(".hist_list", "r");
     char *nextLine = malloc(sizeof(char) * 512);
     char **tokens = malloc(sizeof(char**)*MAX_TOKENS);
@@ -113,7 +114,7 @@ History load_history(){
         //nextLine[strcspn(nextLine, "\n")] = 0;
         nextLine[strlen(nextLine) -1] = '\0';
         number_of_tokens = tokenize(nextLine, tokens);
-        add_to_history(tokens, history);
+        history = add_to_history(tokens, history);
         for (int i = 0; i < number_of_tokens; i++){
             memset(tokens[i], 0, strlen(tokens[i]));
         }
@@ -127,15 +128,17 @@ History load_history(){
     return history;
 }
 
-void clear_history(Command *history, int *history_index){
+History clear_history(History history){
     for(int i =0; i < MAX_HISTORY; i++){
-        strcpy(history[i].line,"");
-        history[i].number =0;
+        strcpy(history.commands[i].line,"");
+        history.commands[i].number =0;
     }
-    *history_index = 0;
+    history.history_index = 0;
+    history.maxReached = 0;
+    return history;
 }
 
-void save_history(Command *history, int *history_index){
+void save_history(History history){
     FILE *historyptr;
     historyptr = fopen(".hist_list","w");
     if(historyptr == NULL){
@@ -143,10 +146,10 @@ void save_history(Command *history, int *history_index){
         return;
     }
     for(int i = 0; i<MAX_HISTORY; i++){
-        if(strcmp(history[*history_index].line,"")){
-            fprintf(historyptr, "%s\n" ,history[*history_index].line);
+        if(strcmp(history.commands[history.history_index].line,"")){
+            fprintf(historyptr, "%s\n" ,history.commands[history.history_index].line);
         }
-        (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
+        (history.history_index) = ((history.history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
     }
     fclose(historyptr);
 }
@@ -158,21 +161,28 @@ void save_history(Command *history, int *history_index){
  * @param history The array of Command structures representing the history.
  * @param history_index A pointer to the current index in the history array.
  */
-void add_to_history(char **command, Command *history, int *history_index) {
+History add_to_history(char **command, History history) {
     // Concatenate the command arguments into a single string
     char temp[MAX_INPUT_LENGTH] = "";
     int i = 0;
     while (command[i] != NULL && strcmp(command[i], " ")) {
-        strcat(temp, " ");
+        if( i != 0){
+            strcat(temp, " ");
+        }
         strcat(temp, command[i]);
         i++;
     }
     // Store the command in the history array
-    strcpy(history[(*history_index) % MAX_HISTORY].line, temp);
+    strcpy(history.commands[(history.history_index)].line, temp);
+    printf("%s\n", history.commands[(history.history_index)].line);
     strcpy(temp, " ");
-    history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 
+    history.commands[(history.history_index) % MAX_HISTORY].number = history.history_index + 1; 
+    if(history.history_index > history.maxReached){
+        history.maxReached = history.history_index;
+    }
     // Update the history index and wrap around when reaching MAX_HISTORY
-    (*history_index) = ((*history_index) + 1) % MAX_HISTORY;
+    history.history_index = ((history.history_index) + 1) % MAX_HISTORY;
+    return history;
 }
 
 /**
@@ -184,43 +194,49 @@ void add_to_history(char **command, Command *history, int *history_index) {
  * @param history The command history array.
  * @param history_index The index of the most recent command in the history array.
  */
-void print_history(Command *history, int history_index) {
+void print_history(History history) {
     int temp = 1;
     for (int i = 0; i < MAX_HISTORY; i++) {
-        int index = (history_index + i) % MAX_HISTORY; 
-        if (history[index].number != 0) { 
-            printf("%d %s %d\n", temp, history[index].line, history[index].number);
+        int index = (history.history_index + i) % MAX_HISTORY; 
+        if (history.commands[index].number != 0) { 
+            printf("%d %s %d\n", temp, history.commands[index].line, history.commands[index].number);
             temp++;
         }
     }
 }
 
 
-char* get_command_from_history(char* input_buf, Command* history, int history_index, int *fromHistory) {
+char* get_command_from_history(char* input_buf, History history, int *fromHistory) {
     char *ptr;
-    printf("history index is = %d\n", history_index);
+    printf("history index is = %d\n", history.history_index);
     if (strcmp(input_buf, "!!\n") == 0 || strcmp(input_buf, "!!") == 0) {
         *fromHistory = 1;
-        if(history_index == 0 || strcmp(history[(history_index-1) % MAX_HISTORY].line, "") == 0) {
+        if(history.history_index == 0 || strcmp(history.commands[(history.history_index-1) % MAX_HISTORY].line, "") == 0) {
             printf("Error: Invalid history invocation\n");
             input_buf[0] = '\0';
         } else {
-            strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
+            strcpy(input_buf, history.commands[(history.history_index-1) % MAX_HISTORY].line);
         }
     } else if (input_buf[0] == '!') {
         *fromHistory = 1;
         int command_no;
         if (input_buf[1] == '-') {
             long temp = strtol(input_buf + 2, &ptr, 10);
-            command_no = history_index - temp;
+            command_no = history.history_index - temp;
             if(command_no < 0)
                 command_no += MAX_HISTORY;
         } else {
-            command_no = ((strtol(input_buf + 1, &ptr, 10) -1) + history_index) % MAX_HISTORY;
+            printf("Max reached = %d\n", history.maxReached);
+            if(history.maxReached == MAX_HISTORY -1){
+                command_no = ((strtol(input_buf + 1, &ptr, 10) -1) + history.history_index) % MAX_HISTORY;
+            }
+            else{
+                command_no = ((strtol(input_buf + 1, &ptr, 10) -1)) % MAX_HISTORY;
+            }
         }
         printf("command number = %d\n", command_no);
         if (command_no >= 0 && command_no < MAX_HISTORY) {
-            strcpy(input_buf, history[command_no].line);
+            strcpy(input_buf, history.commands[command_no].line);
         } else {
             printf("Error: Invalid history invocation\n");
             input_buf[0] = '\0';
