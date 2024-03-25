@@ -227,7 +227,7 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
             }
             //command_no = (strtol(input_buf + 1, &ptr, 10) + history_index - 2) % MAX_HISTORY; //
         }
-        if (command_no >= 0 && command_no < history_index) {
+        if (command_no >= 0) {
             strcpy(input_buf, history[command_no % MAX_HISTORY].line);
         } else {
             printf("Error: Invalid history invocation\n");
