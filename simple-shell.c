@@ -202,7 +202,7 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
     if (strcmp(input_buf, "!!\n") == 0 || strcmp(input_buf, "!!") == 0) {
         *fromHistory = 1;
         if(history_index < 0 || strcmp(history[history_index % MAX_HISTORY].line, "") == 0) {
-            printf("Error: Invalid history invocation\n");
+            printf("Error: Invalid history invocation a\n");
             input_buf[0] = '\0';
         } else {
             strcpy(input_buf, history[history_index % MAX_HISTORY].line);
@@ -230,7 +230,7 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
         if (command_no >= 0) {
             strcpy(input_buf, history[command_no % MAX_HISTORY].line);
         } else {
-            printf("Error: Invalid history invocation\n");
+            printf("Error: Invalid history invocation b\n");
             input_buf[0] = '\0';
         }
     }

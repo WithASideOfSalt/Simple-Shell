@@ -42,7 +42,7 @@ int main(void){
 
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
-    int history_index = -1;
+    int history_index = -1; // Where the latest command is in history
     Command* history = malloc(sizeof(Command) * MAX_HISTORY);    
     //Load history here
     history = load_history(&history_index);
