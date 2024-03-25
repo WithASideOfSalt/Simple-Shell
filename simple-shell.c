@@ -106,16 +106,17 @@ HistoryList read_history(){
     FILE *history_file;
     char buf[512];
     HistoryList history;
-
+    printf("A\n");
     history_file = fopen(".hist_list" , "r");
     if(history_file == NULL) {
       perror("Error opening history file");
       history.index = -1;
       return history;
    }
-   printf("A");
+   printf("B\n");
    int i = 0;
    while(fgets(buf, 512, history_file) != NULL) {
+        printf("I:%d\n", i);
         char *token;
         token = strtok(NULL, DELIMITERS);
         int x = 0;
