@@ -200,21 +200,31 @@ char* get_command_from_history(char* input_buf, Command* history, int history_in
     char *ptr;
     if (strcmp(input_buf, "!!\n") == 0 || strcmp(input_buf, "!!") == 0) {
         *fromHistory = 1;
-        if(history_index == 0 || strcmp(history[(history_index-1) % MAX_HISTORY].line, "") == 0) {
+        if(history_index < 0 || strcmp(history[history_index % MAX_HISTORY].line, "") == 0) {
             printf("Error: Invalid history invocation\n");
             input_buf[0] = '\0';
         } else {
-            strcpy(input_buf, history[(history_index-1) % MAX_HISTORY].line);
+            strcpy(input_buf, history[history_index % MAX_HISTORY].line);
         }
     } else if (input_buf[0] == '!') {
         *fromHistory = 1;
         int command_no;
         if (input_buf[1] == '-') {
-            command_no = history_index - strtol(input_buf + 2, &ptr, 10);
+            command_no = history_index - strtol(input_buf + 2, &ptr, 10) + 1;
             if(command_no < 0)
                 command_no += MAX_HISTORY;
         } else {
-            command_no = (strtol(input_buf + 1, &ptr, 10) - 1) % MAX_HISTORY;
+            int temp = 1;
+            for (int i = 0; i < MAX_HISTORY; i++) {
+                int index = (history_index + i) % MAX_HISTORY; 
+                if (history[index].number != 0) { 
+                    if (temp == strtol(input_buf + 1, &ptr, 10)){
+                        command_no = temp;
+                    }
+                    temp++;
+                }
+            }
+            //command_no = (strtol(input_buf + 1, &ptr, 10) + history_index - 2) % MAX_HISTORY; //
         }
         if (command_no >= 0 && command_no < history_index) {
             strcpy(input_buf, history[command_no % MAX_HISTORY].line);
