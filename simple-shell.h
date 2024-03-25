@@ -33,7 +33,7 @@ HistoryList clear_history(HistoryList);
 void save_history(HistoryList);
 void add_to_history(char **, HistoryList *);
 void print_history(HistoryList);
-void invoke_history(char**, HistoryList, int *, int *);
+char* invoke_history(char*, HistoryList, int *, int *);
 
 int get_env(char **tokens, int number_of_tokens);
 int set_env(char **tokens, int number_of_tokens);
