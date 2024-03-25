@@ -116,11 +116,12 @@ HistoryList read_history(){
    printf("B\n");
    int i = 0;
    while(fgets(buf, 512, history_file) != NULL) {
-        printf("I:%d\n", i);
+        printf("i:%d\n", i);
         char *token;
-        token = strtok(NULL, DELIMITERS);
+        token = strtok(buf, DELIMITERS);
         int x = 0;
         while (token != NULL){
+            printf("x:%d\n", x);
             strcat(history.command[i], token);
             token = strtok(NULL, DELIMITERS);
             x++;
