@@ -8,7 +8,7 @@
 
 
 int main(void){
-        
+    //Save the current path
     char cwd[MAX_PATH_LENGTH];
     // Get the current working directory and check for NULL wd
     if (getcwd(cwd, sizeof(cwd)) == NULL) {
@@ -23,7 +23,10 @@ int main(void){
         printf("Error: PATH not found in the environment.\n");
     }
 
+    // Find the user home directory from the environment
     char *home_directory = getenv("HOME");
+
+    //Set current working directory to user home directory
     if (home_directory != NULL) {
         if (chdir(home_directory) != 0) {
             perror("chdir() error");
@@ -38,19 +41,19 @@ int main(void){
     } else {
         perror("getcwd() error");
     }
-    
 
+    // Load history
+    HistoryList history = read_history();
+    AliasList aliaslist = read_aliases();
+
+    // Do while shell has not terminated
     char input_buf[MAX_INPUT_LENGTH];
     int looping = 1;
-    int history_index = -1; // Where the latest command is in history
-    Command* history = malloc(sizeof(Command) * MAX_HISTORY);    
-    //Load history here
-    history = load_history(&history_index);
-    AliasList aliaslist = read_aliases();
-    //Main loop
     while (looping){
-        // Print prompt
+        // Display prompt
         printf("8-- ");
+        
+        // Read and parse user input
         // Get input from stdin and check for error
         if (fgets(input_buf, sizeof(input_buf), stdin) == NULL) {
             //check for ctrl-D
@@ -61,29 +64,43 @@ int main(void){
             clearerr(stdin);            
         }
 
-        int fromHistory = 0;
-        // Check if the input is a history invocation
-        strcpy(input_buf,get_command_from_history(input_buf, history, history_index, &fromHistory));
-        // Create array of strings to store tokens
+         // Create array of strings to store tokens
         char **tokens;
         // Allocate memory to the array of char pointers
         tokens = malloc(sizeof(char**)* MAX_TOKENS);
         // Parse input into tokens
-        int number_of_tokens = tokenize(input_buf, tokens);  
-        // Make sure that there are tokens / commands to process
+        int number_of_tokens = tokenize(input_buf, tokens); 
         if (number_of_tokens > 0){ 
-            if(fromHistory == 0){
-                add_to_history(tokens, history, &history_index);
-            }  
             builtins command = get_enum(tokens[0]);
-            if(command != ALIAS && command != UNALIAS){
-                tokens = ReplaceAliases(aliaslist, &number_of_tokens, tokens);
-                // get_command_from_history(tokens[0], history, history_index, &fromHistory);
+            int fromHistory = 0;
+            int changed = 1;
+            while (changed == 1){
+                changed = 0;
+                // Check for history invokations
+                if (input_buf[0] == "!"){
+                    // History
+                    input_buf = invoke_history(input_buf, history, &changed, &fromHistory);
+                    // Empty tokens
+                    for (int i = 0; i < number_of_tokens; i++){
+                        free(tokens[i]);
+                    }
+                    number_of_tokens = tokenize(input_buf, tokens);
+                }
                 command = get_enum(tokens[0]);
+                if(command != ALIAS && command != UNALIAS){
+                    tokens = ReplaceAliases(aliaslist, &number_of_tokens, tokens, &changed);
+                }
             }
+            // Check if the input is a history invocation
+            //strcpy(input_buf,get_command_from_history(input_buf, history, history_index, &fromHistory));
+           
+        
             
-            //check if command has already been found with aliases
-                //check if built in command, if not let fork handle the rest
+            if (fromHistory == 0) {
+                add_to_history(tokens, &history);
+            }
+            command = get_enum(tokens[0]);
+            //check if built in command, if not let fork handle the rest
             switch(command){
                 case CD:
                     if(number_of_tokens == 1){
@@ -96,7 +113,7 @@ int main(void){
                     if(number_of_tokens > 1){
                         printf("Error: incorrect usage of history. Usage: history\n");
                     }else{
-                        print_history(history, history_index);  
+                        print_history(history);  
                     }  
                     break;
                 case ALIAS:
@@ -124,28 +141,26 @@ int main(void){
                     looping = 0;
                     break;
                 case CLEARH:
-                    clear_history(history, &history_index);
+                    clear_history(history);
                     break;
                 default:
                     forky_fun(tokens[0], tokens+1, number_of_tokens-1);
                     //printf("DEFAULT\n");
                     break;
             }
-            
+            for (int i = 0; i < number_of_tokens; i++){
+                free(tokens[i]);
+            }
+            free(tokens);
         }
-        for (int i = 0; i < number_of_tokens; i++){
-            memset(tokens[i],0,strlen(tokens[i]));
-            //free(tokens[i]);
-        }
-
-        free(tokens);
+        
     }
 
     
     // Restore original path before exiting and directory
     restore_original_path(cwd);
     chdir(home_directory);
-    save_history(history, &history_index);
+    save_history(history);
     save_aliases(aliaslist);
     return 0;
 }
@@ -157,13 +172,13 @@ Set current working directory to user home directory
 Save the current path
 Load history
 Load aliases
-
-
-
-While the command is a history invocation or alias then replace it with the
-appropriate command from history or the aliased command respectively
-If command is built-in invoke appropriate function
-Else execute command as an external process
+Do while shell has not terminated
+    Display prompt
+    Read and parse user input
+    While the command is a history invocation or alias then replace it with the
+    appropriate command from history or the aliased command respectively
+    If command is built-in invoke appropriate function
+    Else execute command as an external process
 End while
 Save history
 Save aliases

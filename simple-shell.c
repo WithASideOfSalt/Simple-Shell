@@ -97,68 +97,71 @@ builtins get_enum (char * command) {
     return NONE;
 }
 
-Command *load_history(int *history_index){
-    
-    FILE *historyptr;
-    Command *history = malloc(sizeof(Command) * MAX_HISTORY);
-    historyptr = fopen(".hist_list", "r");
-    char *nextLine = malloc(sizeof(char) * 512);
-    char **tokens = malloc(sizeof(char**)*MAX_TOKENS);
-    int number_of_tokens = 0;
-    if(historyptr == NULL){
-        perror("Couldn't find file");
-        return history;
-    }
-    while(fgets(nextLine,MAX_INPUT_LENGTH,historyptr) != NULL){
-        //nextLine[strcspn(nextLine, "\n")] = 0;
-        nextLine[strlen(nextLine) -1] = '\0';
-        number_of_tokens = tokenize(nextLine, tokens);
-        add_to_history(tokens, history, history_index);
-        for (int i = 0; i < number_of_tokens; i++){
-            memset(tokens[i], 0, strlen(tokens[i]));
+
+/*
+ *Loads the history from file.
+ *@return The HistoryList loaded from .hist_list
+ */
+HistoryList read_history(){
+    FILE *history_file;
+    char buf[512];
+    HistoryList history;
+
+    history_file = fopen(".hist_list" , "r");
+    if(history_file == NULL) {
+      perror("Error opening history file");
+      HistoryList.index = -1;
+      return history;
+   }
+   int i = 0;
+   while(fgets(buf, 512, history_file) != NULL) {
+        char *token;
+        token = strtok(NULL, DELIMITERS);
+        int x = 0;
+        while (token != NULL){
+            strcpy(history.command[i][x], token);
+            token = strtok(NULL, DELIMITERS);
+            x++;
         }
+        i++;
+   }
+   printf("Imported %d saved history \n", i);
+   fclose(history_file);
+   return history;
+}
+
+HistoryList clear_history(HistoryList history){
+    for(int i =0; i < MAX_HISTORY; i++){
+        strcpy(history->command[i],"");
     }
-    free(nextLine);
-    for (int i = 0; i < number_of_tokens; i++){
-            free(tokens[i]);
-    }
-    free(tokens);
-    fclose(historyptr);
+    history.index = -1;
     return history;
 }
 
-void clear_history(Command *history, int *history_index){
-    for(int i =0; i < MAX_HISTORY; i++){
-        strcpy(history[i].line,"");
-        history[i].number =0;
-    }
-    *history_index = 0;
-}
-
-void save_history(Command *history, int *history_index){
-    FILE *historyptr;
-    historyptr = fopen(".hist_list","w");
-    if(historyptr == NULL){
+void save_history(HistoryList history){
+    FILE *history_file;
+    history_file = fopen(".hist_list","w");
+    if(history_file == NULL){
         perror("error opening file");
         return;
     }
+    int x = (history.index + 1) % MAX_HISTORY;
     for(int i = 0; i<MAX_HISTORY; i++){
-        if(strcmp(history[*history_index].line,"")){
-            fprintf(historyptr, "%s\n" ,history[*history_index].line);
+        if(strcmp(history.command[x],"") == 0){
+            fprintf(history_file, "%s\n" ,history.command[history.index]);
         }
-        (*history_index) = ((*history_index) + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
+        x = (x + 1) % MAX_HISTORY; // wrap around when reaching MAX_HISTORY
     }
-    fclose(historyptr);
+    fclose(history_file);
 }
 
 /**
  * Adds a command to the history array.
  *
  * @param command The command to be added to the history.
- * @param history The array of Command structures representing the history.
- * @param history_index A pointer to the current index in the history array.
+ * @param history The HistoryList representing the history.
  */
-void add_to_history(char **command, Command *history, int *history_index) {
+void add_to_history(char **command, HistoryList *history) {
     // Concatenate the command arguments into a single string
     char temp[MAX_INPUT_LENGTH] = "";
     int i = 0;
@@ -168,11 +171,10 @@ void add_to_history(char **command, Command *history, int *history_index) {
         i++;
     }
     // Store the command in the history array
-    strcpy(history[((*history_index)) % MAX_HISTORY].line, temp);
+    strcpy(history.command[(history.index + 1) % MAX_HISTORY], temp);
     strcpy(temp, " ");
-    history[(*history_index) % MAX_HISTORY].number = *history_index + 1; 
     // Update the history index and wrap around when reaching MAX_HISTORY
-    (*history_index) = ((*history_index) + 1) % MAX_HISTORY;
+    history->index = (history->index + 1) % MAX_HISTORY;
 }
 
 /**
@@ -181,21 +183,48 @@ void add_to_history(char **command, Command *history, int *history_index) {
  * This function iterates through the command history array and prints the command number
  * and the corresponding command line. It skips any empty slots in the history array.
  * 
- * @param history The command history array.
- * @param history_index The index of the most recent command in the history array.
+ * @param history The command history stucture.
  */
-void print_history(Command *history, int history_index) {
-    printf("Print history index %d\n", history_index);
+void print_history(HistoryList history) {
+    printf("Print history index %d\n", history.index);
     int temp = 1;
     for (int i = 0; i < MAX_HISTORY; i++) {
-        int index = (history_index + i) % MAX_HISTORY; 
+        int index = (i + history.index + 1) % MAX_HISTORY; 
         if (history[index].number != 0) { 
-            printf("%d %s %d\n", temp, history[index].line, index);
+            printf("%d %s %d\n", temp, history.command[index], index);
             temp++;
         }
     }
 }
 
+char* invoke_history(char* input_buf, HistoryList history, int *changed, int *fromHistory){
+    char *ptr;
+    if (input_buf[1] == "!"){
+        strcpy(input_buf, history.command(history.index));
+    } else if (input_buf[1] == "-"){
+        int com = strtol(input_buf + 2, &ptr, 10);
+        if (com > 0 && com <= 20){
+            strcpy(input_buf, history.command((history.index - com -1)%MAX_HISTORY));
+            *changed = 1;
+            *fromHistory = 1;
+        } else {
+            //fail
+        }
+    } else {
+        int com = strtol(input_buf + 4, &ptr, 10);
+        if (com > 0 && com <= 20){
+            int index = history.index + 1;
+            while (strcmp(history.command[index]), "" == 0){
+                index ++;
+            }
+            strcpy(input_buf, history.command((index + com + 1)%MAX_HISTORY));
+            *changed = 1;
+            *fromHistory = 1;
+        } else {
+            //fail
+        }
+    }
+}
 
 char* get_command_from_history(char* input_buf, Command* history, int history_index, int *fromHistory) {
     printf("History index %d\n", history_index);
@@ -457,7 +486,7 @@ void print_aliases(AliasList aliaslist){
 
 }
 
-char** ReplaceAliases(AliasList aliaslist, int* numtokens, char** tokens){
+char** ReplaceAliases(AliasList aliaslist, int* numtokens, char** tokens, int *changed){
     char **new_tokens;
     int newTokenNum = *numtokens;
     int counter = 1;
@@ -524,6 +553,7 @@ char** ReplaceAliases(AliasList aliaslist, int* numtokens, char** tokens){
     }
     if(foundFunction == 1){
         *numtokens = newTokenNum;
+        *changed = 1;
         return new_tokens;
     }
     else{
