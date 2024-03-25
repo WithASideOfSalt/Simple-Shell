@@ -363,7 +363,6 @@ AliasList unalias(char* arguments[], int args_len, AliasList aliaslist){
             found = 1;
             //attempting to free memory used for the list by overwriting all the removed entry with the subsequent entry and repeat for the remainder of the list
             for(int z=i;z<(aliaslist.length);z++){
-                print_aliases(aliaslist);
                 strcpy(aliaslist.list[z].to_replace, aliaslist.list[z+1].to_replace);
                 for(int y=0;y<(aliaslist.list[i].rplc_wth_size); y++){
                     strcpy(aliaslist.list[z].replace_with[y], aliaslist.list[z+1].replace_with[y]);
