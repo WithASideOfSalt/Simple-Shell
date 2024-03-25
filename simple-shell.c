@@ -204,7 +204,7 @@ void invoke_history(char** input_buf, HistoryList history, int *changed, int *fr
     } else if (*input_buf[1] == "-"){
         int com = strtol(*input_buf + 2, &ptr, 10);
         if (com > 0 && com <= 20){
-            strcpy(*input_buf, history.command((history.index - com -1)%MAX_HISTORY));
+            strcpy(*input_buf, history.command[(history.index - com -1)%MAX_HISTORY]);
             *changed = 1;
             *fromHistory = 1;
         } else {
@@ -217,7 +217,7 @@ void invoke_history(char** input_buf, HistoryList history, int *changed, int *fr
             while (strcmp(history.command[index]), "" == 0){
                 index ++;
             }
-            strcpy(*input_buf, history.command((index + com + 1)%MAX_HISTORY));
+            strcpy(*input_buf, history.command[(index + com + 1)%MAX_HISTORY]);
             *changed = 1;
             *fromHistory = 1;
         } else {
