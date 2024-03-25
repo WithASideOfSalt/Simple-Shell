@@ -210,6 +210,7 @@ char* invoke_history(char* input_buf, HistoryList history, int *changed, int *fr
             *fromHistory = 1;
         } else {
             printf("Failed in invoke history!\n");
+            return input_buf;
         }
     } else {
         int com = strtol(input_buf + 4, &ptr, 10);
@@ -223,8 +224,10 @@ char* invoke_history(char* input_buf, HistoryList history, int *changed, int *fr
             *fromHistory = 1;
         } else {
             printf("Failed in invoke history!\n");
+            return input_buf;
         }
     }
+    return new_buf;
 }
 
 
