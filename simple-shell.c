@@ -171,6 +171,7 @@ void add_to_history(char **command, HistoryList *history) {
     int i = 0;
     printf("F\n");
     while (command[i] != NULL && strcmp(command[i], " ") != 0) {
+        printf("i:%d", i);
         strcat(temp, " ");
         strcat(temp, command[i]);
         i++;
