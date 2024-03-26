@@ -77,7 +77,7 @@ int main(void){
             builtins command = get_enum(tokens[0]);
             if(command != ALIAS && command != UNALIAS){
                 tokens = ReplaceAliases(aliaslist, &number_of_tokens, tokens);
-                get_command_from_history(tokens[0], history, &fromHistory);
+                strcpy(input_buf,get_command_from_history(input_buf, history, &fromHistory));
                 command = get_enum(tokens[0]);
             }
             
