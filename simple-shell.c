@@ -208,6 +208,10 @@ char* get_command_from_history(char* input_buf, History history, int *fromHistor
     char *ptr;
     if (strcmp(input_buf, "!!\n") == 0 || strcmp(input_buf, "!!") == 0) {
         *fromHistory = 1;
+        if(strcmp(history.commands[0].line, "") == 0){
+            printf("Nothing in history\n");
+            return "";
+        }
         if(history.history_index == 0 || strcmp(history.commands[(history.history_index-1) % MAX_HISTORY].line, "") == 0) {
             printf("Error: Invalid history invocation\n");
             input_buf[0] = '\0';
@@ -218,21 +222,35 @@ char* get_command_from_history(char* input_buf, History history, int *fromHistor
     else if (input_buf[0] == '!') {
         if(strlen(input_buf) > 4){
             printf("Error: Invalid usage of history invocation. Usage: !<command_no>\n");
-            return input_buf;
+            return "";
         }
         *fromHistory = 1;
+        if(strcmp(history.commands[0].line, "") == 0){
+            printf("Nothing in history\n");
+            return "";
+        }
         int command_no;
         if (input_buf[1] == '-') {
             long temp = strtol(input_buf + 2, &ptr, 10);
+            printf("%ld\n", temp);
+            if(temp > history.maxReached + 1){
+                printf("Error: Invalid history invocation\n");
+                return "";
+            }
             command_no = history.history_index - temp;
             if(command_no < 0)
                 command_no += MAX_HISTORY;
         } else {
+            long temp = strtol(input_buf + 1, &ptr, 10) -1;
+            if(temp > (history.maxReached)){
+                printf("Error: Invalid history invocation\n");
+                return "";
+            }
             if(history.maxReached == MAX_HISTORY -1){
-                command_no = ((strtol(input_buf + 1, &ptr, 10) -1) + history.history_index) % MAX_HISTORY;
+                command_no = (temp + history.history_index) % MAX_HISTORY;
             }
             else{
-                command_no = ((strtol(input_buf + 1, &ptr, 10) -1)) % MAX_HISTORY;
+                command_no = (temp) % MAX_HISTORY;
             }
         }
         if (command_no >= 0 && command_no < MAX_HISTORY) {
