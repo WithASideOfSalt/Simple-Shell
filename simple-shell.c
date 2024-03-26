@@ -213,7 +213,7 @@ char* get_command_from_history(char* input_buf, History history, int *fromHistor
             return "";
         }
         if(history.history_index == 0 || strcmp(history.commands[(history.history_index-1) % MAX_HISTORY].line, "") == 0) {
-            printf("Error: Invalid history invocation\n");
+            printf("Error: Invalid usage of history invocation. Usage: !<command_no> or !!\n");
             input_buf[0] = '\0';
         } else {
             strcpy(input_buf, history.commands[(history.history_index-1) % MAX_HISTORY].line);
@@ -233,7 +233,7 @@ char* get_command_from_history(char* input_buf, History history, int *fromHistor
         if (input_buf[1] == '-') {
             long temp = strtol(input_buf + 2, &ptr, 10);
             if(temp > history.maxReached + 1){
-                printf("Error: Invalid history invocation\n");
+                printf("Error: Invalid usage of history invocation. Usage: !<command_no> or !!\n");
                 return "";
             }
             command_no = history.history_index - temp;
@@ -255,7 +255,7 @@ char* get_command_from_history(char* input_buf, History history, int *fromHistor
         if (command_no >= 0 && command_no < MAX_HISTORY) {
             strcpy(input_buf, history.commands[command_no].line);
         } else {
-            printf("Error: Invalid history invocation\n");
+            printf("Error: Invalid usage of history invocation. Usage: !<command_no> or !!\n");
             input_buf[0] = '\0';
         }
     }
