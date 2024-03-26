@@ -173,7 +173,7 @@ void add_to_history(char **command, HistoryList *history) {
         strcat(temp, command[i]);
         i++;
     }
-    printf("A");
+    printf("A\n");
     // Store the command in the history array
     strcpy(history->command[(history->index + 1) % MAX_HISTORY], temp);
     strcpy(temp, " ");

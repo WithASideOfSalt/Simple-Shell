@@ -73,6 +73,7 @@ int main(void){
         // Parse input into tokens
         int number_of_tokens = tokenize(input_buf, tokens); 
         if (number_of_tokens > 0){ 
+            printf("B\n");
             builtins command = get_enum(tokens[0]);
             int fromHistory = 0;
             int changed = 1;
