@@ -162,12 +162,14 @@ void save_history(HistoryList history){
  * @param history The HistoryList representing the history.
  */
 void add_to_history(char **command, HistoryList *history) {
+    printf("Add to history\n");
     // Concatenate the command arguments into a single string
     if (history == NULL){
         printf("History is null");
     }
     char temp[MAX_INPUT_LENGTH] = "";
     int i = 0;
+    printf("F\n");
     while (command[i] != NULL && strcmp(command[i], " ") != 0) {
         strcat(temp, " ");
         strcat(temp, command[i]);
