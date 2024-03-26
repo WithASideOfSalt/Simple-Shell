@@ -103,6 +103,7 @@ int main(void){
             if (fromHistory == 0) {
                 add_to_history(tokens, &history);
             }
+            printf("D\n")
             command = get_enum(tokens[0]);
             //check if built in command, if not let fork handle the rest
             switch(command){
@@ -152,6 +153,7 @@ int main(void){
                     //printf("DEFAULT\n");
                     break;
             }
+            printf("E\n");
             for (int i = 0; i < number_of_tokens; i++){
                 free(tokens[i]);
             }
