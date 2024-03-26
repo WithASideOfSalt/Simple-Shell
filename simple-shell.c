@@ -110,7 +110,7 @@ HistoryList read_history(){
     if(history_file == NULL) {
       perror("Error opening history file");
       history.index = -1;
-      return history;
+      return clear_history(history);
    }
    int i = 0;
    while(fgets(buf, 512, history_file) != NULL) {
