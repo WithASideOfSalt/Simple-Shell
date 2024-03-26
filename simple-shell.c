@@ -221,7 +221,7 @@ char* get_command_from_history(char* input_buf, History history, int *fromHistor
     } 
     else if (input_buf[0] == '!') {
         if(strlen(input_buf) > 4){
-            printf("Error: Invalid usage of history invocation. Usage: !<command_no>\n");
+            printf("Error: Invalid usage of history invocation. Usage: !<command_no> or !!\n");
             return "";
         }
         *fromHistory = 1;
