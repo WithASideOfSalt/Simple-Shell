@@ -197,7 +197,7 @@ void print_history(History history) {
     for (int i = 0; i < MAX_HISTORY; i++) {
         int index = (history.history_index + i) % MAX_HISTORY; 
         if (history.commands[index].number != 0) { 
-            printf("%d %s %d\n", temp, history.commands[index].line, history.commands[index].number);
+            printf("%d %s\n", temp, history.commands[index].line);
             temp++;
         }
     }
@@ -232,7 +232,6 @@ char* get_command_from_history(char* input_buf, History history, int *fromHistor
         int command_no;
         if (input_buf[1] == '-') {
             long temp = strtol(input_buf + 2, &ptr, 10);
-            printf("%ld\n", temp);
             if(temp > history.maxReached + 1){
                 printf("Error: Invalid history invocation\n");
                 return "";
