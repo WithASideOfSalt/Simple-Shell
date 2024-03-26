@@ -82,6 +82,7 @@ int main(void){
                 // Check for history invokations
                 if (input_buf[0] == '!'){
                     // History
+                    printf("Entered !\n");
                     strcpy(input_buf, invoke_history(input_buf, history, &changed, &fromHistory));
                     // Empty tokens
                     for (int i = 0; i < number_of_tokens; i++){
@@ -98,7 +99,7 @@ int main(void){
             //strcpy(input_buf,get_command_from_history(input_buf, history, history_index, &fromHistory));
            
         
-            
+            printf("C\n");
             if (fromHistory == 0) {
                 add_to_history(tokens, &history);
             }
