@@ -72,6 +72,9 @@ int main(void){
         // Make sure that there are tokens / commands to process
         if (number_of_tokens > 0){ 
             builtins command = get_enum(tokens[0]);
+            if(fromHistory == 0){
+                history = add_to_history(tokens, history);
+            }  
             if(command != ALIAS && command != UNALIAS){
                 tokens = ReplaceAliases(aliaslist, &number_of_tokens, tokens);
                 strcpy(input_buf,"");
@@ -85,9 +88,7 @@ int main(void){
                 number_of_tokens = tokenize(input_buf, tokens);
                 command = get_enum(tokens[0]);
             }
-            if(fromHistory == 0){
-                history = add_to_history(tokens, history);
-            }  
+
             
             //check if command has already been found with aliases
                 //check if built in command, if not let fork handle the rest
